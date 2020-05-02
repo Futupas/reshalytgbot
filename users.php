@@ -152,10 +152,12 @@ Price: ".$line['price']." uah";
     $data_to_send->text = urlencode($text);
     $data_to_send->parse_mode = 'markdown';
     $data_to_send->disable_web_page_preview = true;
-    $data_to_send->reply_markup = json_encode(array(array((object)(array(
-        text => 'i can do it',
-        callback_data => $line['id']
-    )))));
+    $data_to_send->reply_markup = json_encode((object)(array(
+        inline_keyboard => array(array((object)(array(
+            text => 'i can do it',
+            callback_data => $line['id']
+        ))))
+    )));
 
     add_log('request: '.'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&'));
     // return PublishOrderToChannel($text);
