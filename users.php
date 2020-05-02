@@ -104,6 +104,29 @@ function get_user($user_id) {
     return $line;
 }
 
+function get_order($order_id) {
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = "SELECT * FROM \"orders\" WHERE id=$order_id";
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    $rows = pg_num_rows($result);
+
+    if ($rows < 1) {
+        g_free_result($result);
+        pg_close($dbconn);
+        return false;
+        //no order in db
+    }
+
+    $line = pg_fetch_array($result, 0, PGSQL_ASSOC);
+
+    pg_free_result($result);
+    pg_close($dbconn);
+    return $line;
+}
+
 /**
  * if new value is a string, it has to be in ''
  */
@@ -149,7 +172,7 @@ Price: ".$line['price']." uah";
 
     $data_to_send = new stdClass;
     $data_to_send->chat_id = -1001271762698;
-    $data_to_send->text = urlencode($text);
+    $data_to_send->text = $text;
     $data_to_send->parse_mode = 'markdown';
     $data_to_send->disable_web_page_preview = true;
     $data_to_send->reply_markup = json_encode((object)(array(
