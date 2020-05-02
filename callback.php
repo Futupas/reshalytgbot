@@ -42,8 +42,13 @@ function handle_callback($json_message) {
         $customer_id = $msg_chatid;
         $executor_id = explode("/", $choise_data)[0];
         $order_id = explode("/", $choise_data)[1];
-        $order = get_order($choise_data);
+        $order = get_order($order_id);
         if ($order['executor_id'] == null) {
+            file_get_contents('https://api.telegram.org/bot'.getenv('bot_token').'/answerCallbackQuery?'.
+            http_build_query((object)array(
+                'callback_query_id' => $callback_query_id,
+                'text' => 'kkey'
+            )));
             change_order($order_id, 'executor_id', $executor_id);
             SendMessage($customer_id, "[This executor](tg://user?id=$user_id) will do your order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].")");
             SendMessage($customer_id, "You will do this order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].") for [this customer](tg://user?id=$user_id)");
@@ -70,15 +75,19 @@ Done.";
             //send messages to customer and executor
             //change message in channel
         } else {
-            SendMessage($msg_chatid, 'u cant accept one order twice');
+            file_get_contents('https://api.telegram.org/bot'.getenv('bot_token').'/answerCallbackQuery?'.
+            http_build_query((object)array(
+                'callback_query_id' => $callback_query_id,
+                'text' => 'u cant accept one order twice'
+            )));
         }
     }
 
-    $response1 = file_get_contents('https://api.telegram.org/bot'.getenv('bot_token').'/answerCallbackQuery?'.
-        http_build_query((object)array(
-            'callback_query_id' => $callback_query_id,
-            'text' => 'kkey'
-        )));
+    // $response1 = file_get_contents('https://api.telegram.org/bot'.getenv('bot_token').'/answerCallbackQuery?'.
+    //     http_build_query((object)array(
+    //         'callback_query_id' => $callback_query_id,
+    //         'text' => 'kkey'
+    //     )));
     // $response2 = file_get_contents('https://api.telegram.org/bot'.getenv('bot_token').'/editMessageReplyMarkup?'.
     // http_build_query((object)array(
     //     'chat_id' => $msg_chatid,

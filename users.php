@@ -91,7 +91,7 @@ function get_user($user_id) {
     $rows = pg_num_rows($result);
 
     if ($rows < 1) {
-        g_free_result($result);
+        pg_free_result($result);
         pg_close($dbconn);
         return false;
         //no user in db
@@ -114,7 +114,7 @@ function get_order($order_id) {
     $rows = pg_num_rows($result);
 
     if ($rows < 1) {
-        g_free_result($result);
+        pg_free_result($result);
         pg_close($dbconn);
         return false;
         //no order in db
