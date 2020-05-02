@@ -147,10 +147,23 @@ function publish_order($order_id) {
 ".$line['description']."
 Price: ".$line['price']." uah";
 
+    $data_to_send = new stdClass;
+    $data_to_send->chat_id = -1001271762698;
+    $data_to_send->text = urlencode($text);
+    $data_to_send->parse_mode = 'markdown';
+    $data_to_send->disable_web_page_preview = true;
+    $data_to_send->reply_markup = json_encode(array(array((object)(array(
+        text => 'i can do it',
+        callback_data => $line['id']
+    )))));
+
     // return PublishOrderToChannel($text);
     $response = file_get_contents(
-        'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?chat_id=-1001271762698&text='.urlencode($text).'&parse_mode=markdown&disable_web_page_preview=true'
+        'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
     );
+    // $response = file_get_contents(
+    //     'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?chat_id=-1001271762698&text='.urlencode($text).'&parse_mode=markdown&disable_web_page_preview=true'
+    // );
 
     return json_decode($response);
 }

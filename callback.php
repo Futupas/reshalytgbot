@@ -1,18 +1,20 @@
 <?php
 
 function handle_callback($json_message) {
-    // $callback_query_id = $json_message->callback_query->id;
-    // $msg_chatid = $json_message->callback_query->message->chat->id;
-    // $choise_data = $json_message->callback_query->data;
-    // $msg_id = $json_message->callback_query->message->message_id;
+    $callback_query_id = $json_message->callback_query->id;
+    $msg_chatid = $json_message->callback_query->message->chat->id;
+    $choise_data = $json_message->callback_query->data;
+    $msg_id = $json_message->callback_query->message->message_id;
+
+    add_log('callbavk data: '.json_encode($json_message));
 
     // $choise_data_array = explode('_', $choise_data); // 0 - showed profile id, 1 - like (0 or 1)
 
-    // $response1 = file_get_contents('https://api.telegram.org/bot'.getenv('bot_token').'/answerCallbackQuery?'.
-    //     http_build_query((object)array(
-    //         'callback_query_id' => $callback_query_id,
-    //         'text' => 'you '.($choise_data_array[1] ? '' : 'dis').'liked.'
-    //     )));
+    $response1 = file_get_contents('https://api.telegram.org/bot'.getenv('bot_token').'/answerCallbackQuery?'.
+        http_build_query((object)array(
+            'callback_query_id' => $callback_query_id,
+            'text' => 'kkey'
+        )));
     // $response2 = file_get_contents('https://api.telegram.org/bot'.getenv('bot_token').'/editMessageReplyMarkup?'.
     // http_build_query((object)array(
     //     'chat_id' => $msg_chatid,
