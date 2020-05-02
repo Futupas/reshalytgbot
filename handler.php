@@ -61,6 +61,9 @@ function handle($json_message) {
                         change_order($order_id, 'price', $msg);
                         set_user_step($msg_chatid, 0);
                         $publish_return = publish_order($order_id);
+                        add_log("p_return: ".$publish_return);
+                        add_log("json encode: ".json_encode($publish_return));
+                        add_log("var dump: ".var_dump($publish_return));
                         if (!$publish_return->ok) SendMessage($msg_chatid, 'error publishing ur order');
                         else {
                             $post_id = $publish_return->result->message_id;

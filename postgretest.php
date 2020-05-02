@@ -18,7 +18,7 @@ port=5432")
     or die('Не удалось соединиться: ' . pg_last_error());
 
 // Выполнение SQL-запроса
-$query = 'DELETE FROM "orders" where true';
+$query = 'UPDATE users set step=3,current_order_fill=2 where id=387489833';
 $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
 
 // Вывод результатов в HTML

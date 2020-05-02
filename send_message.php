@@ -11,11 +11,11 @@ function ReplyToMessage($chatid, $text, $msgtoreply) {
 };
 
 
-function PublishOrderToChannel($text) {
-    $response = file_get_contents(
-        'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?chat_id=reshalychannel&text='.urlencode($text).'&parse_mode=markdown'
-    );
-    return json_decode($response);
-}
+// function PublishOrderToChannel($text) {
+//     $response = file_get_contents(
+//         'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?chat_id=reshalychannel&text='.urlencode($text).'&parse_mode=markdown'
+//     );
+//     return json_decode($response);
+// }
 
 ?>

@@ -117,6 +117,7 @@ function change_order($order_id, $field, $new_value) {
     pg_free_result($result);
     pg_close($dbconn);
 }
+
 function publish_order($order_id) {
     $dbconn = pg_connect($GLOBALS['connection_string'])
     or die('Не удалось соединиться: ' . pg_last_error());
@@ -146,7 +147,11 @@ function publish_order($order_id) {
 *$line->description
 Price: $line->price uah";
 
-    return PublishOrderToChannel($text);
+    // return PublishOrderToChannel($text);
+    $response = file_get_contents(
+        'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?chat_id=reshalychannel&text='.urlencode($text).'&parse_mode=markdown'
+    );
+    return json_decode($response);
 }
  
 ?>
