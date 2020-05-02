@@ -68,8 +68,6 @@ function set_user_step($user_id, $step) {
 
     pg_free_result($result);
     pg_close($dbconn);
-
-    return $new_id;
 }
 
 function set_user_current_order_fill($user_id, $current_order_fill) {
@@ -81,8 +79,6 @@ function set_user_current_order_fill($user_id, $current_order_fill) {
 
     pg_free_result($result);
     pg_close($dbconn);
-
-    return $new_id;
 }
 
 function get_user($user_id) {
@@ -120,7 +116,6 @@ function change_order($order_id, $field, $new_value) {
 
     pg_free_result($result);
     pg_close($dbconn);
-    return $line;
 }
 function publish_order($order_id) {
     $dbconn = pg_connect($GLOBALS['connection_string'])

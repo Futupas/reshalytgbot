@@ -7,3 +7,6 @@ LINE 2:     &quot;id&quot; int not null SERIAL PRIMARY KEY,
 [02-May-2020 11:18:40 UTC] PHP Warning:  pg_query(): Query failed: ERROR:  syntax error at or near &quot;SERIAL&quot;
 LINE 2:     &quot;id&quot; int SERIAL PRIMARY KEY, 
                      ^ in C:\PROJECTS\ReshalyBot\postgretest.php on line 29
+[02-May-2020 12:48:24 UTC] PHP Warning:  pg_query(): Query failed: ERROR:  argument of WHERE must be type boolean, not type integer
+LINE 1: DELETE FROM &quot;users&quot; where 1
+                                  ^ in C:\PROJECTS\ReshalyBot\postgretest.php on line 22
