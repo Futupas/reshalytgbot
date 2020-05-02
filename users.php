@@ -16,11 +16,11 @@ port=5432";
 
 
 
-function is_user_in_db($userid) {
+function is_user_in_db($user_id) {
     $dbconn = pg_connect($GLOBALS['connection_string'])
     or die('Не удалось соединиться: ' . pg_last_error());
 
-    $query = "SELECT * FROM \"users\" WHERE id=$userid";
+    $query = "SELECT * FROM \"users\" WHERE id=$user_id";
     $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
 
     $rows = pg_num_rows($result);
@@ -32,15 +32,126 @@ function is_user_in_db($userid) {
     else return true;
 }
 
-function add_user_to_db($userid) {
+function add_user_to_db($user_id) {
     $dbconn = pg_connect($GLOBALS['connection_string'])
     or die('Не удалось соединиться: ' . pg_last_error());
 
-    $query = 'INSERT INTO "users" ("id", "step", "rating", "current_order_fill") VALUES ('.$userid.', 0, 0, null)';
+    $query = 'INSERT INTO "users" ("id", "step", "rating", "current_order_fill") VALUES ('.$user_id.', 0, 0, null)';
     $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
 
     pg_free_result($result);
     pg_close($dbconn);
 }
 
+function create_order($customer_id) {
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = 'INSERT INTO "orders" ("customer_id") VALUES ('.$customer_id.') RETURNING "id"';
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    $row = pg_fetch_row($result);
+    $new_id = $row['0'];
+
+    pg_free_result($result);
+    pg_close($dbconn);
+
+    return $new_id;
+}
+
+function set_user_step($user_id, $step) {
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = 'UPDATE "users" SET "step"='.$step.' WHERE "id"='.$user_id.';';
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    pg_free_result($result);
+    pg_close($dbconn);
+
+    return $new_id;
+}
+
+function set_user_current_order_fill($user_id, $current_order_fill) {
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = 'UPDATE "users" SET "current_order_fill"='.$current_order_fill.' WHERE "id"='.$user_id.';';
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    pg_free_result($result);
+    pg_close($dbconn);
+
+    return $new_id;
+}
+
+function get_user($user_id) {
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = "SELECT * FROM \"users\" WHERE id=$user_id";
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    $rows = pg_num_rows($result);
+
+    if ($rows < 1) {
+        g_free_result($result);
+        pg_close($dbconn);
+        return false;
+        //no user in db
+    }
+
+    $line = pg_fetch_array($result, 0, PGSQL_ASSOC);
+
+    pg_free_result($result);
+    pg_close($dbconn);
+    return $line;
+}
+
+/**
+ * if new value is a string, it has to be in ''
+ */
+function change_order($order_id, $field, $new_value) {
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = 'UPDATE "orders" SET "'.$field.'"='.$new_value.' WHERE "id"='.$order_id.';';
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    pg_free_result($result);
+    pg_close($dbconn);
+    return $line;
+}
+function publish_order($order_id) {
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = "SELECT * FROM \"orders\" WHERE id=$order_id";
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    $rows = pg_num_rows($result);
+
+    if ($rows < 1) {
+        g_free_result($result);
+        pg_close($dbconn);
+        return false;
+        //no user in db
+    }
+
+    $line = pg_fetch_array($result, 0, PGSQL_ASSOC);
+
+    pg_free_result($result);
+    pg_close($dbconn);
+
+    // return $line;
+
+    $text = 
+"Order
+*$line->name*
+*$line->description
+Price: $line->price uah";
+
+    return PublishOrderToChannel($text);
+}
+ 
 ?>

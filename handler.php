@@ -20,25 +20,63 @@ function handle($json_message) {
         if ($msg == '/start') {
             // SendMessage($msg_chatid, urlencode(""));
             if (is_user_in_db($msg_chatid)) {
-                SendMessage($msg_chatid, 'u are already in db ');
+                SendMessage($msg_chatid, 'u are already in db');
             } else {
                 add_user_to_db($msg_chatid);
                 SendMessage($msg_chatid, 'kkey, now u can add an order by sending me /add_order command');
             }
         } else if ($msg == '/add_order') {
-            // if (is_user_in_db($msg_chatid)) {
-            //     SendMessage($msg_chatid, 'u are already in db ');
-            // } else {
-            //     $fname = property_exists($json_message->message->from, 'first_name') ? $json_message->message->from->first_name.' ' : '';
-            //     $lname = property_exists($json_message->message->from, 'last_name') ? $json_message->message->from->last_name : '';
-            //     $name = $fname.$lname;
-            //     $tg_nick = property_exists($json_message->message->from, 'username') ? $json_message->message->from->username : '';
-
-            //     add_user_to_db($msg_chatid, $name, $tg_nick);
-            //     SendMessage($msg_chatid, 'u was successfully added to db');
-            // }
+            if (!is_user_in_db($msg_chatid)) {
+                SendMessage($msg_chatid, 'press /start to start working with me');
+            } else {
+                //create order, get its id
+                $order_id = create_order($msg_chatid);
+                //set user step
+                set_user_step($msg_chatid, 1);
+                //set user current order fill
+                set_user_current_order_fill($msg_chatid, $order_id);
+                //send message
+                SendMessage($msg_chatid, 'kkey, now send me name for ur order (32 chars max)');
+            }
 
         } else {
+            $user = get_user($msg_chatid);
+            $step = $user['step'];
+            switch ($step) {
+                case 1:
+                    $order_id = $user['current_order_fill'];
+                    change_order($order_id, 'name', "'$msg'");
+                    set_user_step($msg_chatid, 2);
+                    SendMessage($msg_chatid, 'kkey, now send me description for ur order (256 chars max)');
+                    break;
+                case 2:
+                    $order_id = $user['current_order_fill'];
+                    change_order($order_id, 'text', "'$msg'");
+                    set_user_step($msg_chatid, 3);
+                    SendMessage($msg_chatid, 'kkey, now send me description for ur order (256 chars max)');
+                    break;
+                case 3:
+                    $order_id = $user['current_order_fill'];
+                    if (is_int($msg) && (int)$msg > 0) {
+                        change_order($order_id, 'price', $msg);
+                        set_user_step($msg_chatid, 0);
+                        $publish_return = publish_order($order_id);
+                        if (!$publish_return->ok) SendMessage($msg_chatid, 'error publishing ur order');
+                        else {
+                            $post_id = $publish_return->result->message_id;
+                            set_user_current_order_fill($msg_chatid, 'null');
+                            change_order($order_id, 'post_id', $post_id);
+                            SendMessage($msg_chatid, "kkey, here's ur order link: https://t.me/reshalychannel/$post_id");
+                            SendMessage($msg_chatid, "now u can add one more order by sending me /add_order command");
+                        }
+                    } else
+                        SendMessage($msg_chatid, 'price must be a positive int');
+                    break;
+                
+                default:
+                SendMessage($msg_chatid, 'send me a command');
+                    break;
+            }
 
             // $user = get_my_profile($msg_chatid);
             // if ($user->error) {
