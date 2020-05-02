@@ -50,8 +50,8 @@ function handle_callback($json_message) {
                 'text' => 'kkey'
             )));
             change_order($order_id, 'executor_id', $executor_id);
-            SendMessage($customer_id, "[This executor](tg://user?id=$user_id) will do your order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].")");
-            SendMessage($executor_id, "You will do this order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].") for [this customer](tg://user?id=$user_id)");
+            SendMessageWithMarkdown($customer_id, "[This executor](tg://user?id=$user_id) will do your order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].")");
+            SendMessageWithMarkdown($executor_id, "You will do this order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].") for [this customer](tg://user?id=$user_id)");
                 $text = "[Executor](tg://user?id=$user_id) wants to do ur order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].").";
                 $data_to_send = new stdClass;
                 $data_to_send->chat_id = -1001271762698;
