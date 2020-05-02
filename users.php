@@ -143,9 +143,9 @@ function publish_order($order_id) {
 
     $text = 
 "Order
-*$line->name*
-$line->description
-Price: $line->price uah";
+*".$line['name']."*
+".$line['description']."
+Price: ".$line['price']." uah";
 
     // return PublishOrderToChannel($text);
     $response = file_get_contents(
