@@ -151,6 +151,7 @@ Price: $line->price uah";
     $response = file_get_contents(
         'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?chat_id=reshalychannel&text='.urlencode($text).'&parse_mode=markdown'
     );
+    add_log("response: ".$response);
     return json_decode($response);
 }
  
