@@ -52,7 +52,7 @@ function handle_callback($json_message) {
             change_order($order_id, 'executor_id', $executor_id);
             SendMessageWithMarkdown($customer_id, "[This executor](tg://user?id=$user_id) will do your order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].")");
             SendMessageWithMarkdown($executor_id, "You will do this order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].") for [this customer](tg://user?id=$user_id)");
-                $text = "[Executor](tg://user?id=$user_id) wants to do ur order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].").";
+
                 $data_to_send = new stdClass;
                 $data_to_send->chat_id = -1001271762698;
                 $data_to_send->message_id = $order['post_id'];
@@ -64,12 +64,7 @@ Price: ".$order['price']." uah
 Done.";
                 $data_to_send->parse_mode = 'markdown';
                 $data_to_send->disable_web_page_preview = true;
-                $data_to_send->reply_markup = json_encode((object)(array(
-                    'inline_keyboard' => array(array((object)(array(
-                        // text => 'accept',
-                        // callback_data => $user_id."/".$order['id']
-                    ))))
-                )));
+                $data_to_send->reply_markup = '';
                 $response = file_get_contents(
                     'https://api.telegram.org/bot'.getenv('bot_token').'/editMessageText?'.http_build_query($data_to_send, '', '&')
                 );
