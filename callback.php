@@ -29,9 +29,9 @@ function handle_callback($json_message) {
             $data_to_send->parse_mode = 'markdown';
             $data_to_send->disable_web_page_preview = true;
             $data_to_send->reply_markup = json_encode((object)(array(
-                inline_keyboard => array(array((object)(array(
-                    text => 'accept',
-                    callback_data => $user_id."/".$order['id']
+                'inline_keyboard' => array(array((object)(array(
+                    'text' => 'accept',
+                    'callback_data' => $user_id."/".$order['id']
                 ))))
             )));
             $response = file_get_contents(
@@ -55,6 +55,7 @@ function handle_callback($json_message) {
                 $text = "[Executor](tg://user?id=$user_id) wants to do ur order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].").";
                 $data_to_send = new stdClass;
                 $data_to_send->chat_id = -1001271762698;
+                $data_to_send->message_id = $order['post_id'];
                 $data_to_send->text =
 "Order
 *".$order['name']."*
@@ -64,13 +65,13 @@ Done.";
                 $data_to_send->parse_mode = 'markdown';
                 $data_to_send->disable_web_page_preview = true;
                 $data_to_send->reply_markup = json_encode((object)(array(
-                    inline_keyboard => array(array((object)(array(
+                    'inline_keyboard' => array(array((object)(array(
                         // text => 'accept',
                         // callback_data => $user_id."/".$order['id']
                     ))))
                 )));
                 $response = file_get_contents(
-                    'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
+                    'https://api.telegram.org/bot'.getenv('bot_token').'/editMessageText?'.http_build_query($data_to_send, '', '&')
                 );
             //send messages to customer and executor
             //change message in channel

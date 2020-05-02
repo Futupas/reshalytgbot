@@ -176,9 +176,9 @@ Price: ".$line['price']." uah";
     $data_to_send->parse_mode = 'markdown';
     $data_to_send->disable_web_page_preview = true;
     $data_to_send->reply_markup = json_encode((object)(array(
-        inline_keyboard => array(array((object)(array(
-            text => 'i can do it',
-            callback_data => $line['id']
+        'inline_keyboard' => array(array((object)(array(
+            'text' => 'i can do it',
+            'callback_data' => $line['id']
         ))))
     )));
 
