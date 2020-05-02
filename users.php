@@ -149,8 +149,9 @@ Price: $line->price uah";
 
     // return PublishOrderToChannel($text);
     $response = file_get_contents(
-        'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?chat_id=reshalychannel&text='.urlencode($text).'&parse_mode=markdown'
+        'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?chat_id=-1001271762698&text='.urlencode($text).'&parse_mode=markdown'
     );
+    add_log("request: ".'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?chat_id=-1001271762698&text='.urlencode($text).'&parse_mode=markdown');
     add_log("response: ".$response);
     return json_decode($response);
 }

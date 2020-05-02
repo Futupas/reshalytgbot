@@ -59,7 +59,6 @@ function handle($json_message) {
                     $order_id = $user['current_order_fill'];
                     if (is_string_a_number($msg) && (int)$msg > 0) {
                         change_order($order_id, 'price', $msg);
-                        set_user_step($msg_chatid, 0);
                         $publish_return = publish_order($order_id);
                         add_log("p_return: ".$publish_return);
                         add_log("json encode: ".json_encode($publish_return));
@@ -68,6 +67,7 @@ function handle($json_message) {
                         else {
                             $post_id = $publish_return->result->message_id;
                             set_user_current_order_fill($msg_chatid, 'null');
+                            set_user_step($msg_chatid, 0);
                             change_order($order_id, 'post_id', $post_id);
                             SendMessage($msg_chatid, "kkey, here's ur order link: https://t.me/reshalychannel/$post_id");
                             SendMessage($msg_chatid, "now u can add one more order by sending me /add_order command");
