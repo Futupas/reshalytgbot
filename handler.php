@@ -51,7 +51,7 @@ function handle($json_message) {
                     break;
                 case 2:
                     $order_id = $user['current_order_fill'];
-                    change_order($order_id, 'text', "'$msg'");
+                    change_order($order_id, 'description', "'$msg'");
                     set_user_step($msg_chatid, 3);
                     SendMessage($msg_chatid, 'kkey, now send me description for ur order (256 chars max)');
                     break;
