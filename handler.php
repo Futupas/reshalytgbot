@@ -60,10 +60,7 @@ function handle($json_message) {
                     if (is_string_a_number($msg) && (int)$msg > 0) {
                         change_order($order_id, 'price', $msg);
                         $publish_return = publish_order($order_id);
-                        add_log("p_return: ".$publish_return);
-                        add_log("json encode: ".json_encode($publish_return));
-                        add_log("var dump: ".var_dump($publish_return));
-                        if (!$publish_return['ok']) SendMessage($msg_chatid, 'error publishing ur order');
+                        if (!$publish_return->ok) SendMessage($msg_chatid, 'error publishing ur order');
                         else {
                             $post_id = $publish_return->result->message_id;
                             set_user_current_order_fill($msg_chatid, 'null');
