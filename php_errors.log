@@ -1,0 +1,9 @@
+[02-May-2020 10:28:00 UTC] PHP Warning:  pg_query(): Query failed: ERROR:  syntax error at or near &quot;TABLE&quot;
+LINE 1: DELETE TABLE &quot;Table1&quot;
+               ^ in C:\PROJECTS\ReshalyBot\postgretest.php on line 22
+[02-May-2020 11:18:16 UTC] PHP Warning:  pg_query(): Query failed: ERROR:  syntax error at or near &quot;SERIAL&quot;
+LINE 2:     &quot;id&quot; int not null SERIAL PRIMARY KEY, 
+                              ^ in C:\PROJECTS\ReshalyBot\postgretest.php on line 29
+[02-May-2020 11:18:40 UTC] PHP Warning:  pg_query(): Query failed: ERROR:  syntax error at or near &quot;SERIAL&quot;
+LINE 2:     &quot;id&quot; int SERIAL PRIMARY KEY, 
+                     ^ in C:\PROJECTS\ReshalyBot\postgretest.php on line 29
