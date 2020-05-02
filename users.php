@@ -17,7 +17,7 @@ port=5432";
 
 
 function is_user_in_db($userid) {
-    $dbconn = pg_connect($connection_string)
+    $dbconn = pg_connect($GLOBALS['connection_string'])
     or die('Не удалось соединиться: ' . pg_last_error());
 
     $query = "SELECT * FROM \"users\" WHERE id=$userid";
@@ -33,7 +33,7 @@ function is_user_in_db($userid) {
 }
 
 function add_user_to_db($userid) {
-    $dbconn = pg_connect($connection_string)
+    $dbconn = pg_connect($GLOBALS['connection_string'])
     or die('Не удалось соединиться: ' . pg_last_error());
 
     $query = 'INSERT INTO "users" ("id", "step", "rating", "current_order_fill") VALUES ('.$userid.', 0, 0, null)';
