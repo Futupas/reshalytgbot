@@ -53,11 +53,11 @@ function handle($json_message) {
                     $order_id = $user['current_order_fill'];
                     change_order($order_id, 'description', "'$msg'");
                     set_user_step($msg_chatid, 3);
-                    SendMessage($msg_chatid, 'kkey, now send me description for ur order (256 chars max)');
+                    SendMessage($msg_chatid, 'kkey, now send me price of ur order');
                     break;
                 case 3:
                     $order_id = $user['current_order_fill'];
-                    if (is_int($msg) && (int)$msg > 0) {
+                    if (is_string_a_number($msg) && (int)$msg > 0) {
                         change_order($order_id, 'price', $msg);
                         set_user_step($msg_chatid, 0);
                         $publish_return = publish_order($order_id);
@@ -195,6 +195,11 @@ function handle($json_message) {
             // SendMessage($msg_chatid, 'u said '.$msg);
         }
     }
+}
+
+
+function is_string_a_number($str) {
+    return true;
 }
 
 ?>
