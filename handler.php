@@ -178,12 +178,12 @@ Price: ".$line['price']." uah";
                     break;
                 
                 case 5: 
-                    change_user($msg_chatid, 'name', '"'.$msg.'"');
+                    change_user($msg_chatid, 'name', "'$msg'");
                     set_user_step($msg_chatid, 6);
                     SendMessage($msg_chatid, "kkey, now send me ur university");
                 break;
                 case 6: 
-                    change_user($msg_chatid, 'univ', '"'.$msg.'"');
+                    change_user($msg_chatid, 'univ', "'$msg'");
                     set_user_step($msg_chatid, 0);
                     SendMessage($msg_chatid, "kkey, now u can add an order by sending me /add_order command");
                 break;

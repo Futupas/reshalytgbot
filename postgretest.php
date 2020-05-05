@@ -18,7 +18,7 @@ port=5432")
     or die('Не удалось соединиться: ' . pg_last_error());
 
 // Выполнение SQL-запроса
-$query = 'UPDATE users SET &quot;name&quot;=&quot;alex&quot; WHERE &quot;id&quot;=387489833;';
+$query = 'UPDATE "users" SET "name"=\'alex\' WHERE "id"=387489833';
 $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
 
 // Вывод результатов в HTML

@@ -10,3 +10,6 @@ LINE 2:     &quot;id&quot; int SERIAL PRIMARY KEY,
 [02-May-2020 12:48:24 UTC] PHP Warning:  pg_query(): Query failed: ERROR:  argument of WHERE must be type boolean, not type integer
 LINE 1: DELETE FROM &quot;users&quot; where 1
                                   ^ in C:\PROJECTS\ReshalyBot\postgretest.php on line 22
+[05-May-2020 22:14:42 UTC] PHP Warning:  pg_query(): Query failed: ERROR:  syntax error at or near &quot;&amp;&quot;
+LINE 1: UPDATE users SET &amp;quot;name&amp;quot;=&amp;quot;alex&amp;quot; WHERE &amp;qu...
+                         ^ in C:\PROJECTS\ReshalyBot\postgretest.php on line 22
