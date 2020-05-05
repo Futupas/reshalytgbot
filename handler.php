@@ -25,6 +25,33 @@ function handle($json_message) {
                 add_user_to_db($msg_chatid);
                 SendMessage($msg_chatid, 'kkey, now u can add an order by sending me /add_order command');
             }
+        } else if (strpos($msg, '/start') == 0) {
+            $choise_data = explode(" ", $msg)[1]; // id of order he's taking
+            if (!is_user_in_db($msg_chatid)) {
+                // user is not registered
+                SendMessage($msg_chatid, 'let\'s register u...');
+                add_user_to_db($msg_chatid);
+                set_user_current_order_fill($msg_chatid, $choise_data);
+            } else {
+                $user_id = $msg_chatid;
+                $order = get_order($choise_data);
+                $text = "[Executor](tg://user?id=$user_id) wants to do ur order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].").";
+                $data_to_send = new stdClass;
+                $data_to_send->chat_id = $order['customer_id'];
+                $data_to_send->text = $text;
+                $data_to_send->parse_mode = 'markdown';
+                $data_to_send->disable_web_page_preview = true;
+                $data_to_send->reply_markup = json_encode((object)(array(
+                    'inline_keyboard' => array(array((object)(array(
+                        'text' => 'accept',
+                        'callback_data' => $user_id."/".$order['id']
+                    ))))
+                )));
+                $response = file_get_contents(
+                    'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
+                );
+            }
+
         } else if ($msg == '/add_order') {
             if (!is_user_in_db($msg_chatid)) {
                 SendMessage($msg_chatid, 'press /start to start working with me');
@@ -59,6 +86,29 @@ function handle($json_message) {
                     $order_id = $user['current_order_fill'];
                     if (is_string_a_number($msg) && (int)$msg > 0) {
                         change_order($order_id, 'price', $msg);
+                        set_user_step($msg_chatid, 4);
+                        $line = get_order($order_id);
+
+$text = 
+"Order
+*".$line['name']."*
+".$line['description']."
+Price: ".$line['price']." uah";
+                        $data_to_send = new stdClass;
+                            $data_to_send->chat_id = -1001271762698;
+                            $data_to_send->text = $text;
+                            $data_to_send->parse_mode = 'markdown';
+                            $data_to_send->disable_web_page_preview = true;
+                            $data_to_send->reply_markup = json_encode((object)(array(
+                                'keyboard' => array(array("Публиковать", "Отменить"))
+                            )));
+                    } else
+                        SendMessage($msg_chatid, 'price must be a positive int');
+                    break;
+                case 4:
+                    $order_id = $user['current_order_fill'];
+                    if ($msg == 'Публиковать') {
+                        set_user_step($msg_chatid, 0);
                         $publish_return = publish_order($order_id);
                         if (!$publish_return->ok) SendMessage($msg_chatid, 'error publishing ur order');
                         else {
@@ -69,130 +119,19 @@ function handle($json_message) {
                             SendMessage($msg_chatid, "kkey, here's ur order link: https://t.me/reshalychannel/$post_id");
                             SendMessage($msg_chatid, "now u can add one more order by sending me /add_order command");
                         }
-                    } else
-                        SendMessage($msg_chatid, 'price must be a positive int');
+                    } else if ($msg == 'Отменить') {
+                        set_user_step($msg_chatid, 0);
+                        delete_order($order_id);
+                        SendMessage($msg_chatid, "your order was successfully deleted");
+                    } else {
+                        SendMessage($msg_chatid, "incorrect command");
+                    }
                     break;
                 
                 default:
                 SendMessage($msg_chatid, 'send me a command');
                     break;
             }
-
-            // $user = get_my_profile($msg_chatid);
-            // if ($user->error) {
-            //      SendMessage($msg_chatid, 'cannot find you in db');
-            //     // add_to_channel('Error. Can not find user in DB%0AUser id='.$msg_chatid);
-            // } else {
-            //     switch($user->fill_action) {
-            //         case 0:
-            //             SendMessage($msg_chatid, 'unknown command');
-            //         break;
-            //         case 1: //change name
-            //             set_new_name($msg_chatid, $msg);
-            //             set_user_fill_step($msg_chatid, 0);
-            //             SendMessage($msg_chatid, 'ur name was changed');
-            //         break;
-            //         case 2: //change description
-            //             set_new_description($msg_chatid, $msg);
-            //             set_user_fill_step($msg_chatid, 0);
-            //             SendMessage($msg_chatid, 'ur about text was changed');
-            //         break;
-            //         case 3: //change photos
-            //             if (property_exists($json_message->message, 'photo')) {
-            //                 $photos = $json_message->message->photo;
-            //                 $photo_id = $photos[count($photos)-1]->file_id;
-            //                 set_new_profile_photo($msg_chatid, $photo_id);
-            //                 set_user_fill_step($msg_chatid, 0);
-            //                 SendMessage($msg_chatid, 'profile photo was updated');
-            //             } else {
-            //                 SendMessage($msg_chatid, 'send me photo');
-            //             }
-            //         break;
-            //         case 4: //change sex
-            //             //$msg
-            //             $sex_id = get_sex_id_by_name($msg);
-            //             if ($sex_id == -1) {
-            //                 // set_user_fill_step($msg_chatid, 4);
-            //                 SendMessage($msg_chatid, 'unknown sex, try again hackerman');
-            //             } else {
-            //                 set_new_sex($msg_chatid, $sex_id);
-            //                 set_user_fill_step($msg_chatid, 0);
-            //                 SendMessage($msg_chatid, 'ur sex was changed&reply_markup='.json_encode((object)array("remove_keyboard" => true)));
-            //             }
-            //         break;
-            //         case 5: //change faculty
-            //             //$msg
-            //             $faculty_id = get_faculty_id_by_name($msg);
-            //             if ($faculty_id == -1) {
-            //                 // set_user_fill_step($msg_chatid, 5);
-            //                 SendMessage($msg_chatid, 'unknown faculty, try again hackerman');
-            //             } else {
-            //                 set_new_faculty($msg_chatid, $faculty_id);
-            //                 set_user_fill_step($msg_chatid, 0);
-            //                 SendMessage($msg_chatid, 'ur faculty was changed&reply_markup='.json_encode((object)array("remove_keyboard" => true)));
-            //             }
-            //         break;
-            //         case 6: //change studying year
-            //             //$msg
-            //             $studyr_id = get_studyr_id_by_name($msg);
-            //             if ($studyr_id == -1) {
-            //                 // set_user_fill_step($msg_chatid, 6);
-            //                 SendMessage($msg_chatid, 'unknown studying year, try again hackerman');
-            //             } else {
-            //                 set_new_studyr($msg_chatid, $studyr_id);
-            //                 set_user_fill_step($msg_chatid, 0);
-            //                 SendMessage($msg_chatid, 'ur studying year was changed&reply_markup='.json_encode((object)array("remove_keyboard" => true)));
-            //             }
-            //         break;
-            //         case 7: //change living place
-            //             //$msg
-            //             $livplace_id = get_livplace_id_by_name($msg);
-            //             if ($livplace_id == -1) {
-            //                 // set_user_fill_step($msg_chatid, 7);
-            //                 SendMessage($msg_chatid, 'unknown living place, try again hackerman');
-            //             } else {
-            //                 set_new_livplace($msg_chatid, $livplace_id);
-            //                 set_user_fill_step($msg_chatid, 0);
-            //                 SendMessage($msg_chatid, 'ur living place was changed&reply_markup='.json_encode((object)array("remove_keyboard" => true)));
-            //             }
-            //         break;
-            //         case 8: //change hobbies
-            //             sql_query_toggle_profile_hobbie($msg_chatid, $msg);
-            //             SendMessage($msg_chatid, 'ok, send me /done to finish&reply_markup='.get_keyboard_for_hobbies($msg_chatid));
-            //         break;
-            //         case 9: //change matching sexes
-            //             sql_query_toggle_profile_search($msg_chatid, $msg, 'Sexes', 'search_sexes');
-            //             SendMessage($msg_chatid, 'ok, send me /done to finish&reply_markup='.
-            //             get_keyboard_for_search($msg_chatid, 'Sexes', 'search_sexes', 'sex'));
-            //         break;
-            //         // case 10: //change matching hobbies
-            //         //     sql_query_toggle_profile_search($msg_chatid, $msg, 'Hobbies', 'search_hobbies');
-            //         //     SendMessage($msg_chatid, 'ok, send me /done to finish&reply_markup='.
-            //         //     get_keyboard_for_search($msg_chatid, 'Hobbies', 'search_hobbies', 'hobbie'));
-            //         // break;
-            //         case 11: //change matching faculties
-            //             sql_query_toggle_profile_search($msg_chatid, $msg, 'Faculties', 'search_faculties');
-            //             SendMessage($msg_chatid, 'ok, send me /done to finish&reply_markup='.
-            //             get_keyboard_for_search($msg_chatid, 'Faculties', 'search_faculties', 'faculty'));
-            //         break;
-            //         case 12: //change matching studying years
-            //             sql_query_toggle_profile_search($msg_chatid, $msg, 'StudyingYears', 'search_studying_years');
-            //             SendMessage($msg_chatid, 'ok, send me /done to finish&reply_markup='.
-            //             get_keyboard_for_search($msg_chatid, 'StudyingYears', 'search_studying_years', 'studying year'));
-            //         break;
-            //         case 13: //change matching living places
-            //             sql_query_toggle_profile_search($msg_chatid, $msg, 'LivingPlace', 'search_living_places');
-            //             SendMessage($msg_chatid, 'ok, send me /done to finish&reply_markup='.
-            //             get_keyboard_for_search($msg_chatid, 'LivingPlace', 'search_living_places', 'living place'));
-            //         break;
-            //         default:
-            //             SendMessage($msg_chatid, 'unknown command');
-            //         break;
-            //     }
-                
-            // }
-
-            // SendMessage($msg_chatid, 'u said '.$msg);
         }
     }
 }

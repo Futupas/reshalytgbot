@@ -104,6 +104,9 @@ function get_user($user_id) {
     return $line;
 }
 
+/**
+ * returns order by id
+ */
 function get_order($order_id) {
     $dbconn = pg_connect($GLOBALS['connection_string'])
     or die('Не удалось соединиться: ' . pg_last_error());
@@ -125,6 +128,16 @@ function get_order($order_id) {
     pg_free_result($result);
     pg_close($dbconn);
     return $line;
+}
+function delete_order($order_id) {
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = "DELETE FROM \"orders\" WHERE id=$order_id";
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    pg_free_result($result);
+    pg_close($dbconn);
 }
 
 /**
