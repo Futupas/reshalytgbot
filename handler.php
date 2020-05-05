@@ -107,29 +107,26 @@ function handle($json_message) {
                     break;
                 case 3:
                     $order_id = $user['current_order_fill'];
-                    if (is_string_a_number($msg) && (int)$msg > 0) {
-                        change_order($order_id, 'price', $msg);
-                        set_user_step($msg_chatid, 4);
-                        $line = get_order($order_id);
+                    change_order($order_id, 'price', "'$msg'");
+                    set_user_step($msg_chatid, 4);
+                    $line = get_order($order_id);
 
 $text = 
 "Order
 *".$line['name']."*
 ".$line['description']."
 Price: ".$line['price']." uah";
-                        $data_to_send = new stdClass;
-                            $data_to_send->chat_id = $msg_chatid;
-                            $data_to_send->text = $text;
-                            $data_to_send->parse_mode = 'markdown';
-                            $data_to_send->disable_web_page_preview = true;
-                            $data_to_send->reply_markup = json_encode((object)(array(
-                                'keyboard' => array(array("Публиковать", "Отменить"))
-                            )));
-                            $response = file_get_contents(
-                                'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
-                            );
-                    } else
-                        SendMessage($msg_chatid, 'price must be a positive int');
+                    $data_to_send = new stdClass;
+                        $data_to_send->chat_id = $msg_chatid;
+                        $data_to_send->text = $text;
+                        $data_to_send->parse_mode = 'markdown';
+                        $data_to_send->disable_web_page_preview = true;
+                        $data_to_send->reply_markup = json_encode((object)(array(
+                            'keyboard' => array(array("Публиковать", "Отменить"))
+                        )));
+                        $response = file_get_contents(
+                            'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
+                        );
                     break;
                 case 4:
                     $order_id = $user['current_order_fill'];
@@ -195,9 +192,5 @@ Price: ".$line['price']." uah";
     }
 }
 
-
-function is_string_a_number($str) {
-    return true;
-}
 
 ?>
