@@ -2,3 +2,6 @@
 1 - setting order name
 2 - setting order description
 3 - setting order price
+4 - previewing of order
+5 - setting user's name
+6 - setting user's univ

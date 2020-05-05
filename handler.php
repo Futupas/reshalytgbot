@@ -17,22 +17,44 @@ function handle($json_message) {
     if ($sender_is_bot) {
         SendMessage($msg_chatid, 'bots are not allowed.');
     } else {
+        //check for user
+        $user = get_user($msg_chatid);
+        if ($user === false) {
+            SendMessage($msg_chatid, 'u are not registered. send me your name');
+            add_user_to_db($msg_chatid);
+            set_user_step($msg_chatid, 5);
+            exit(0);
+        } else if ($user['name'] == null && $user['step'] != 5 && $user['step'] != 6) {
+            SendMessage($msg_chatid, 'u are not registered. send me your name');
+            add_user_to_db($msg_chatid);
+            set_user_step($msg_chatid, 5);
+            exit(0);
+        } else if ($user['univ'] == null && $user['step'] != 5 && $user['step'] != 6) {
+            SendMessage($msg_chatid, 'u are not registered. send me your university');
+            add_user_to_db($msg_chatid);
+            set_user_step($msg_chatid, 6);
+            exit(0);
+        }
+
         if ($msg == '/start') {
+            
             // SendMessage($msg_chatid, urlencode(""));
-            if (is_user_in_db($msg_chatid)) {
-                SendMessage($msg_chatid, 'u are already in db');
-            } else {
-                add_user_to_db($msg_chatid);
-                SendMessage($msg_chatid, 'kkey, now u can add an order by sending me /add_order command');
-            }
+            // if (is_user_in_db($msg_chatid)) {
+            SendMessage($msg_chatid, 'u have already started');
+                
+            // } else {
+            //     add_user_to_db($msg_chatid);
+            //     set_user_step($msg_chatid, 5);
+            //     SendMessage($msg_chatid, 'kkey, now send me your name');
+            // }
         } else if (strpos($msg, '/start') === 0) {
             $choise_data = explode(" ", $msg)[1]; // id of order he's taking
-            if (!is_user_in_db($msg_chatid)) {
-                // user is not registered
-                SendMessage($msg_chatid, 'let\'s register u...');
-                add_user_to_db($msg_chatid);
-                set_user_current_order_fill($msg_chatid, $choise_data);
-            } else {
+            // if (!is_user_in_db($msg_chatid)) {
+            //     // user is not registered
+            //     SendMessage($msg_chatid, 'let\'s register u...');
+            //     add_user_to_db($msg_chatid);
+            //     set_user_current_order_fill($msg_chatid, $choise_data);
+            // } else {
                 $user_id = $msg_chatid;
                 $order = get_order($choise_data);
                 $text = "[Executor](tg://user?id=$user_id) wants to do ur order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].").";
@@ -51,7 +73,7 @@ function handle($json_message) {
                     'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
                 );
                 SendMessage($msg_chatid, 'kkey, wait until customer will accept u');
-            }
+            // }
 
         } else if ($msg == '/add_order') {
             if (!is_user_in_db($msg_chatid)) {
@@ -155,7 +177,17 @@ Price: ".$line['price']." uah";
                     }
                     break;
                 
-                default:
+                case 5: 
+                    change_user($msg_chatid, 'name', '"'.$msg.'"');
+                    set_user_step($msg_chatid, 6);
+                    SendMessage($msg_chatid, "kkey, now send me ur university");
+                break;
+                case 6: 
+                    change_user($msg_chatid, 'univ', '"'.$msg.'"');
+                    set_user_step($msg_chatid, 0);
+                    SendMessage($msg_chatid, "kkey, now u can add an order by sending me /add_order command");
+                break;
+                    default:
                 SendMessage($msg_chatid, 'send me a command');
                     break;
             }

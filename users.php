@@ -154,6 +154,20 @@ function change_order($order_id, $field, $new_value) {
     pg_close($dbconn);
 }
 
+/**
+ * if new value is a string, it has to be in ''
+ */
+function change_user($order_id, $field, $new_value) {
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = 'UPDATE "users" SET "'.$field.'"='.$new_value.' WHERE "id"='.$order_id.';';
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    pg_free_result($result);
+    pg_close($dbconn);
+}
+
 function publish_order($order_id) {
     $dbconn = pg_connect($GLOBALS['connection_string'])
     or die('Не удалось соединиться: ' . pg_last_error());
