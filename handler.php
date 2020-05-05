@@ -25,7 +25,7 @@ function handle($json_message) {
                 add_user_to_db($msg_chatid);
                 SendMessage($msg_chatid, 'kkey, now u can add an order by sending me /add_order command');
             }
-        } else if (strpos($msg, '/start') == 0) {
+        } else if (strpos($msg, '/start') === 0) {
             $choise_data = explode(" ", $msg)[1]; // id of order he's taking
             if (!is_user_in_db($msg_chatid)) {
                 // user is not registered
