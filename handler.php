@@ -50,6 +50,7 @@ function handle($json_message) {
                 $response = file_get_contents(
                     'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
                 );
+                SendMessage($msg_chatid, 'kkey, wait until customer will accept u');
             }
 
         } else if ($msg == '/add_order') {
