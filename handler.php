@@ -95,13 +95,16 @@ $text =
 ".$line['description']."
 Price: ".$line['price']." uah";
                         $data_to_send = new stdClass;
-                            $data_to_send->chat_id = -1001271762698;
+                            $data_to_send->chat_id = $msg_chatid;
                             $data_to_send->text = $text;
                             $data_to_send->parse_mode = 'markdown';
                             $data_to_send->disable_web_page_preview = true;
                             $data_to_send->reply_markup = json_encode((object)(array(
                                 'keyboard' => array(array("Публиковать", "Отменить"))
                             )));
+                            $response = file_get_contents(
+                                'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
+                            );
                     } else
                         SendMessage($msg_chatid, 'price must be a positive int');
                     break;
