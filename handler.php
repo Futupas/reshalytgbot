@@ -137,7 +137,18 @@ Price: ".$line['price']." uah";
                     } else if ($msg == 'Отменить') {
                         set_user_step($msg_chatid, 0);
                         delete_order($order_id);
-                        SendMessage($msg_chatid, "your order was successfully deleted");
+                        // SendMessage($msg_chatid, "your order was successfully deleted");
+                        $data_to_send = new stdClass;
+                        $data_to_send->chat_id = $msg_chatid;
+                        $data_to_send->text = "your order was successfully deleted";
+                        $data_to_send->parse_mode = 'markdown';
+                        $data_to_send->disable_web_page_preview = true;
+                        $data_to_send->reply_markup = json_encode((object)(array(
+                            'remove_keyboard' => true
+                        )));
+                        $response = file_get_contents(
+                            'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
+                        );
                     } else {
                         SendMessage($msg_chatid, "incorrect command");
                     }
