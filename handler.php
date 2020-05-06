@@ -59,10 +59,15 @@ function handle($json_message) {
 
                 if (is_executor_in_table($choise_data, $msg_chatid)) {
                     SendMessage($msg_chatid, 'u can not press "i can do it" button more than once');
+                    exit(0);
                 }
 
                 add_executor_in_table($choise_data, $msg_chatid);
                 $order = get_order($choise_data);
+                if ($order['customer_id'] == $user_id) {
+                    SendMessage($msg_chatid, 'u can not be an executor of ur order');
+                    exit(0);
+                }
                 $text = "[Executor](tg://user?id=$user_id) wants to do ur order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].").";
                 $data_to_send = new stdClass;
                 $data_to_send->chat_id = $order['customer_id'];
