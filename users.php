@@ -220,5 +220,52 @@ Price: ".$line['price']." uah";
 
     return json_decode($response);
 }
+
+
+function is_executor_in_table($order_id, $executor_id) {
+    //order_executors
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = "SELECT * FROM \"order_executors\" WHERE order_id=$order_id AND executor_id=$executor_id";
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    $rows = pg_num_rows($result);
+
+    if ($rows < 1) {
+        pg_free_result($result);
+        pg_close($dbconn);
+        return false;
+        //no order in db
+    }
+
+    // $line = pg_fetch_array($result, 0, PGSQL_ASSOC);
+
+    pg_free_result($result);
+    pg_close($dbconn);
+    return true;
+}
+function add_executor_in_table($order_id, $executor_id) {
+    //order_executors
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = "INSERT INTO \"order_executors\" (order_id,executor_id) VALUES ($order_id , $executor_id)";
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    pg_free_result($result);
+    pg_close($dbconn);
+}
+function delete_executors_from_table($order_id) {
+    //order_executors
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = "DELETE FROM \"order_executors\" WHERE order_id=$order_id";
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    pg_free_result($result);
+    pg_close($dbconn);
+}
  
 ?>

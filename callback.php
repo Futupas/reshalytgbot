@@ -50,6 +50,7 @@ function handle_callback($json_message) {
                 'text' => 'kkey'
             )));
             change_order($order_id, 'executor_id', $executor_id);
+            delete_executors_from_table($order_id);
             SendMessageWithMarkdown($customer_id, "[This executor](tg://user?id=$user_id) will do your order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].")");
             SendMessageWithMarkdown($executor_id, "You will do this order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].") for [this customer](tg://user?id=$user_id)");
 
