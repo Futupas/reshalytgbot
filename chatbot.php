@@ -55,7 +55,7 @@
                     $data_to_send->text = $text;
                     $data_to_send->parse_mode = 'markdown';
                     $data_to_send->disable_web_page_preview = true;
-                    $response = json_encode(file_get_contents(
+                    $response = json_decode(file_get_contents(
                         'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
                     ));
                     add_row_to_chat_messages_table($user_id, $response->result->message_id, $order['executor_id'], $choise_data);
@@ -66,7 +66,7 @@
                     $data_to_send->text = $text;
                     $data_to_send->parse_mode = 'markdown';
                     $data_to_send->disable_web_page_preview = true;
-                    $response = json_encode(file_get_contents(
+                    $response = json_decode(file_get_contents(
                         'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
                     ));
                     add_row_to_chat_messages_table($user_id, $response->result->message_id, $order['customer_id'], $choise_data);
@@ -87,7 +87,7 @@
                     $user = get_user($msg_chatid);
                     $text = "*".$user->name."*:\n$msg";
                     $response = SendMessageWithMarkdownToChatBot($chat_message['destination_chat_id'], $text);
-                    add_row_to_chat_messages_table($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id']);
+                    add_row_to_chat_messages_table($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['']);
                 } else {
                     SendMessageToChatBot($msg_chatid, 'u can not send me msg that is not a reply');
                     exit(0);
