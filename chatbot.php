@@ -86,6 +86,7 @@
                     }
 
                     if ($msg == '/done') {
+                        $order = get_order($chat_message['order_id']);
                         if ($user_id == $order['customer_id']) {
                             change_order($order['id'], 'customer_done', 'true');
                             if ($order['executor_done'] === true) {
