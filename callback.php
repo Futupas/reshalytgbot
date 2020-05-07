@@ -22,8 +22,12 @@ function handle_callback($json_message) {
             )));
             change_order($order_id, 'executor_id', $executor_id);
             delete_executors_from_table($order_id);
-            SendMessageWithMarkdown($customer_id, "[Press this link](https://t.me/reshalychatbot?start=".$order['id'].") to chat with executor of order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].")");
-            SendMessageWithMarkdown($executor_id, "[Press this link](https://t.me/reshalychatbot?start=".$order['id'].") to chat with customer of order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].")");
+            
+            $user_executor = get_user($order['executor_id']);
+            $user_customer = get_user($order['customer_id']);
+
+            SendMessageWithMarkdown($customer_id, "[Press this link](https://t.me/reshalychatbot?start=".$order['id'].") to chat with executor of order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].") (his name is ".$user_executor['name'].")");
+            SendMessageWithMarkdown($executor_id, "[Press this link](https://t.me/reshalychatbot?start=".$order['id'].") to chat with customer of order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].") (his name is ".$user_customer['name'].")");
 
                 $data_to_send = new stdClass;
                 $data_to_send->chat_id = -1001271762698;

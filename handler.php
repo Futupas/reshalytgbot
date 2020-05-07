@@ -53,7 +53,9 @@ function handle($json_message) {
                 SendMessage($msg_chatid, 'u can not be an executor of ur order');
                 exit(0);
             }
-            $text = "[Executor](tg://user?id=$user_id) wants to do ur order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].").";
+            
+            $user_executor = get_user($user_id);
+            $text = $user_executor['name']." wants to do ur order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].").";
             $data_to_send = new stdClass;
             $data_to_send->chat_id = $order['customer_id'];
             $data_to_send->text = $text;
