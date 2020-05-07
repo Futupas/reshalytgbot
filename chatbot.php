@@ -49,7 +49,7 @@
 
 
                 if ($user_id == $order['customer_id']) {
-                    $text = "ккеу, сбщ, которые ты отправишь мне, отвечая на это сбщ, я отправлю исполнителю заказа \"".$order['name']."\". И все сбщ, которые ты отправишь, отвечая на его сбщ, так же отправятся ему";
+                    $text = "ккеу, сбщ, которые ты отправишь мне, отвечая на это сбщ, я отправлю исполнителю заказа \"".$order['name']."\". И все сбщ, которые ты отправишь, отвечая на его сбщ, так же отправятся ему. ответь сообщением /done что б завершить заказ со своей стороны. когда заказ буит закрыт с двух сторон, исполнитель получить лв, а статус заказа перейдёт в выполненный";
                     $data_to_send = new stdClass;
                     $data_to_send->chat_id = $order['customer_id'];
                     $data_to_send->text = $text;
@@ -60,7 +60,7 @@
                     ));
                     add_row_to_chat_messages_table($user_id, $response->result->message_id, $order['executor_id'], $choise_data);
                 } else if ($user_id == $order['executor_id']) {
-                    $text = "ккеу, сбщ, которые ты отправишь мне, отвечая на это сбщ, я отправлю заказчику заказа \"".$order['name']."\". И все сбщ, которые ты отправишь, отвечая на его сбщ, так же отправятся ему";
+                    $text = "ккеу, сбщ, которые ты отправишь мне, отвечая на это сбщ, я отправлю заказчику заказа \"".$order['name']."\". И все сбщ, которые ты отправишь, отвечая на его сбщ, так же отправятся ему. ответь сообщением /done что б завершить заказ со своей стороны. когда заказ буит закрыт с двух сторон, исполнитель получить лв, а статус заказа перейдёт в выполненный";
                     $data_to_send = new stdClass;
                     $data_to_send->chat_id = $order['executor_id'];
                     $data_to_send->text = $text;
@@ -84,9 +84,35 @@
                         SendMessageToChatBot($msg_chatid, 'u replied on a wrong message');
                         exit(0);
                     }
-                    $text = "*".$user['name']."*:\n$msg";
-                    $response = SendMessageWithMarkdownToChatBot($chat_message['destination_chat_id'], $text);
-                    add_row_to_chat_messages_table($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id']);
+
+                    if ($msg == '/done') {
+                        if ($user_id == $order['customer_id']) {
+                            change_order($order['id'], 'customer_done', 'true');
+                            if ($order['executor_done'] === true) {
+                                delete_order($order['id']);
+                                SendMessageToChatBot($msg_chatid, 'kkey, order was deleted');
+                            } else {
+                                SendMessageToChatBot($msg_chatid, 'kkey, wait until executor will stop order to');
+                            }
+                            exit(0);
+                        } else if ($user_id == $order['executor_id']) {
+                            change_order($order['id'], 'executor_done', 'true');
+                            if ($order['customer_done'] === true) {
+                                delete_order($order['id']);
+                                SendMessageToChatBot($msg_chatid, 'kkey, order was deleted');
+                            } else {
+                                SendMessageToChatBot($msg_chatid, 'kkey, wait until customer will stop order to');
+                            }
+                            exit(0);
+                        } else {
+                            SendMessageToChatBot($msg_chatid, 'u can not use this bot with no order');
+                            exit(0);
+                        }
+                    } else {
+                        $text = "*".$user['name']."*:\n$msg";
+                        $response = SendMessageWithMarkdownToChatBot($chat_message['destination_chat_id'], $text);
+                        add_row_to_chat_messages_table($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id']);
+                    }
                 } else {
                     SendMessageToChatBot($msg_chatid, 'u can not send me msg that is not a reply');
                     exit(0);

@@ -33,7 +33,7 @@ function handle_callback($json_message) {
 *".$order['name']."*
 ".$order['description']."
 Price: ".$order['price']." uah
-Done.";
+In process.";
                 $data_to_send->parse_mode = 'markdown';
                 $data_to_send->disable_web_page_preview = true;
                 $data_to_send->reply_markup = '';

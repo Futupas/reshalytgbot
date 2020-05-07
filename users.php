@@ -123,10 +123,48 @@ function get_order($order_id) {
     return $line;
 }
 function delete_order($order_id) {
+    $order = get_order($order_id);
+    $data_to_send = new stdClass;
+    $data_to_send->chat_id = -1001271762698;
+    $data_to_send->message_id = $order['post_id'];
+    $data_to_send->text =
+"Order
+*".$order['name']."*
+".$order['description']."
+Price: ".$order['price']." uah
+Done.";
+    $data_to_send->parse_mode = 'markdown';
+    $data_to_send->disable_web_page_preview = true;
+    $data_to_send->reply_markup = '';
+    $response = file_get_contents(
+        'https://api.telegram.org/bot'.getenv('bot_token').'/editMessageText?'.http_build_query($data_to_send, '', '&')
+    );
+
+    //delete order
     $dbconn = pg_connect($GLOBALS['connection_string'])
     or die('Не удалось соединиться: ' . pg_last_error());
 
     $query = "DELETE FROM \"orders\" WHERE id=$order_id";
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    pg_free_result($result);
+    pg_close($dbconn);
+
+    //delete messages
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = "DELETE FROM \"chat_messages\" WHERE order_id=$order_id";
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    pg_free_result($result);
+    pg_close($dbconn);
+
+    //delete order_executors
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = "DELETE FROM \"order_executors\" WHERE order_id=$order_id";
     $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
 
     pg_free_result($result);
