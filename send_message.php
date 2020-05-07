@@ -18,6 +18,7 @@ function SendMessageToChatBot($chatid, $text) {
 };
 function SendMessageWithMarkdownToChatBot($chatid, $text) {
     $response = file_get_contents('https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendMessage?chat_id='.$chatid.'&text='.urlencode($text).'&disable_web_page_preview=true&parse_mode=markdown');
+    return json_decode($response);
 };
 
 ?>

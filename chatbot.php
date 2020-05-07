@@ -77,7 +77,21 @@
 
                 
             } else {
-                //not a
+                if (property_exists($json_message->message, 'reply_to_message')) {
+                    $reply_to_message_id = $json_message->message->reply_to_message->message_id;
+                    $chat_message = get_row_from_chat_messages_table($msg_chatid, $reply_to_message_id);
+                    if ($chat_message === false) {
+                        SendMessageToChatBot($msg_chatid, 'u replied on a wrong message');
+                        exit(0);
+                    }
+                    $user = get_user($msg_chatid);
+                    $text = "*".$user->name."*:\n$msg";
+                    $response = SendMessageWithMarkdownToChatBot($chat_message['destination_chat_id'], $text);
+                    add_row_to_chat_messages_table($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id']);
+                } else {
+                    SendMessageToChatBot($msg_chatid, 'u can not send me msg that is not a reply');
+                    exit(0);
+                }
             }
         }
     } else {
