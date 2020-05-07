@@ -90,7 +90,7 @@
                         add_log(print_r($order, true));
                         if ($msg_chatid == $order['customer_id']) {
                             change_order($order['id'], 'customer_done', 'true');
-                            if ($order['executor_done'] === true) {
+                            if ($order['executor_done'] === 't') {
                                 delete_order($order['id']);
                                 SendMessageToChatBot($msg_chatid, 'kkey, order was deleted');
                             } else {
@@ -99,7 +99,7 @@
                             exit(0);
                         } else if ($msg_chatid == $order['executor_id']) {
                             change_order($order['id'], 'executor_done', 'true');
-                            if ($order['customer_done'] === true) {
+                            if ($order['customer_done'] === 't') {
                                 delete_order($order['id']);
                                 SendMessageToChatBot($msg_chatid, 'kkey, order was deleted');
                             } else {
