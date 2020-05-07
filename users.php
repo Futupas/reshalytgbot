@@ -240,7 +240,7 @@ Price: ".$line['price']." uah";
         ))))
     )));
 
-    add_log('request: '.'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&'));
+    // add_log('request: '.'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&'));
     $response = file_get_contents(
         'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
     );
