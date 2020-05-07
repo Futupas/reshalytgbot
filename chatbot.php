@@ -87,7 +87,7 @@
 
                     if ($msg == '/done') {
                         $order = get_order($chat_message['order_id']);
-                        if ($user_id == $order['customer_id']) {
+                        if ($msg_chatid == $order['customer_id']) {
                             change_order($order['id'], 'customer_done', 'true');
                             if ($order['executor_done'] === true) {
                                 delete_order($order['id']);
@@ -96,7 +96,7 @@
                                 SendMessageToChatBot($msg_chatid, 'kkey, wait until executor will stop order to');
                             }
                             exit(0);
-                        } else if ($user_id == $order['executor_id']) {
+                        } else if ($msg_chatid == $order['executor_id']) {
                             change_order($order['id'], 'executor_done', 'true');
                             if ($order['customer_done'] === true) {
                                 delete_order($order['id']);
