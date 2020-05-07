@@ -1,12 +1,5 @@
 <?php
 
-
-// $db_servername = getenv('db_server');
-// $db_port = getenv('db_port');
-// $db_username = getenv('db_username');
-// $db_password = getenv('db_password');
-// $db_name = getenv('db_dbname');
-
 $connection_string = "host=ec2-176-34-97-213.eu-west-1.compute.amazonaws.com 
 dbname=dqgjdn987m200 
 user=umsfvokedwaxub 
@@ -210,14 +203,9 @@ Price: ".$line['price']." uah";
     )));
 
     add_log('request: '.'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&'));
-    // return PublishOrderToChannel($text);
     $response = file_get_contents(
         'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
     );
-    // $response = file_get_contents(
-    //     'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?chat_id=-1001271762698&text='.urlencode($text).'&parse_mode=markdown&disable_web_page_preview=true'
-    // );
-
     return json_decode($response);
 }
 
@@ -268,4 +256,40 @@ function delete_executors_from_table($order_id) {
     pg_close($dbconn);
 }
  
+
+
+function add_row_to_chat_messages_table($chat_id, $message_id, $destination_chat_id, $order_id) {
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = "INSERT INTO \"chat_messages\" (chat_id, message_id, destination_chat_id, order_id) VALUES ($chat_id, $message_id, $destination_chat_id, $order_id)";
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    pg_free_result($result);
+    pg_close($dbconn);
+}
+
+function get_row_from_chat_messages_table($chat_id, $message_id) {
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = "SELECT * FROM \"chat_messages\" WHERE chat_id=$chat_id AND message_id=$message_id";
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    $rows = pg_num_rows($result);
+
+    if ($rows < 1) {
+        pg_free_result($result);
+        pg_close($dbconn);
+        return false;
+        //no order in db
+    }
+
+    $line = pg_fetch_array($result, 0, PGSQL_ASSOC);
+
+    pg_free_result($result);
+    pg_close($dbconn);
+    return $line;
+}
+
 ?>

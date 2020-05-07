@@ -37,55 +37,38 @@ function handle($json_message) {
         }
 
         if ($msg == '/start') {
-            
-            // SendMessage($msg_chatid, urlencode(""));
-            // if (is_user_in_db($msg_chatid)) {
             SendMessage($msg_chatid, 'u have already started');
-                
-            // } else {
-            //     add_user_to_db($msg_chatid);
-            //     set_user_step($msg_chatid, 5);
-            //     SendMessage($msg_chatid, 'kkey, now send me your name');
-            // }
         } else if (strpos($msg, '/start') === 0) {
             $choise_data = explode(" ", $msg)[1]; // id of order he's taking
-            // if (!is_user_in_db($msg_chatid)) {
-            //     // user is not registered
-            //     SendMessage($msg_chatid, 'let\'s register u...');
-            //     add_user_to_db($msg_chatid);
-            //     set_user_current_order_fill($msg_chatid, $choise_data);
-            // } else {
-                $user_id = $msg_chatid;
+            $user_id = $msg_chatid;
 
-                if (is_executor_in_table($choise_data, $msg_chatid)) {
-                    SendMessage($msg_chatid, 'u can not press "i can do it" button more than once');
-                    exit(0);
-                }
+            if (is_executor_in_table($choise_data, $msg_chatid)) {
+                SendMessage($msg_chatid, 'u can not press "i can do it" button more than once');
+                exit(0);
+            }
 
-                add_executor_in_table($choise_data, $msg_chatid);
-                $order = get_order($choise_data);
-                if ($order['customer_id'] == $user_id) {
-                    SendMessage($msg_chatid, 'u can not be an executor of ur order');
-                    exit(0);
-                }
-                $text = "[Executor](tg://user?id=$user_id) wants to do ur order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].").";
-                $data_to_send = new stdClass;
-                $data_to_send->chat_id = $order['customer_id'];
-                $data_to_send->text = $text;
-                $data_to_send->parse_mode = 'markdown';
-                $data_to_send->disable_web_page_preview = true;
-                $data_to_send->reply_markup = json_encode((object)(array(
-                    'inline_keyboard' => array(array((object)(array(
-                        'text' => 'accept',
-                        'callback_data' => $user_id."/".$order['id']
-                    ))))
-                )));
-                $response = file_get_contents(
-                    'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
-                );
-                SendMessage($msg_chatid, 'kkey, wait until customer will accept u');
-            // }
-
+            add_executor_in_table($choise_data, $msg_chatid);
+            $order = get_order($choise_data);
+            if ($order['customer_id'] == $user_id) {
+                SendMessage($msg_chatid, 'u can not be an executor of ur order');
+                exit(0);
+            }
+            $text = "[Executor](tg://user?id=$user_id) wants to do ur order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].").";
+            $data_to_send = new stdClass;
+            $data_to_send->chat_id = $order['customer_id'];
+            $data_to_send->text = $text;
+            $data_to_send->parse_mode = 'markdown';
+            $data_to_send->disable_web_page_preview = true;
+            $data_to_send->reply_markup = json_encode((object)(array(
+                'inline_keyboard' => array(array((object)(array(
+                    'text' => 'accept',
+                    'callback_data' => $user_id."/".$order['id']
+                ))))
+            )));
+            $response = file_get_contents(
+                'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
+            );
+            SendMessage($msg_chatid, 'kkey, wait until customer will accept u');
         } else if ($msg == '/add_order') {
             if (!is_user_in_db($msg_chatid)) {
                 SendMessage($msg_chatid, 'press /start to start working with me');

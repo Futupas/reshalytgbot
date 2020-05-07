@@ -18,7 +18,7 @@ port=5432")
     or die('Не удалось соединиться: ' . pg_last_error());
 
 // Выполнение SQL-запроса
-$query = 'CREATE TABLE "order_executors" (order_id int not null, executor_id int not null)';
+$query = 'CREATE TABLE "chat_messages" (chat_id int not null, message_id int not null, destination_chat_id int not null, order_id int not null)';
 $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
 
 // Вывод результатов в HTML
