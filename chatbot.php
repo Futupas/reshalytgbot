@@ -87,7 +87,7 @@
                     // $user = get_user($msg_chatid);
                     $text = "*".$user['name']."*:\n$msg";
                     $response = SendMessageWithMarkdownToChatBot($chat_message['destination_chat_id'], $text);
-                    add_row_to_chat_messages_table($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order']);
+                    add_row_to_chat_messages_table($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id']);
                 } else {
                     SendMessageToChatBot($msg_chatid, 'u can not send me msg that is not a reply');
                     exit(0);
