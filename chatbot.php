@@ -93,6 +93,7 @@
                             if ($order['executor_done'] === 't') {
                                 delete_order($order['id']);
                                 SendMessageToChatBot($msg_chatid, 'kkey, order was deleted');
+                                SendMessageToChatBot($order['executor_id'], 'order was deleted');
                             } else {
                                 SendMessageToChatBot($msg_chatid, 'kkey, wait until executor will stop order to');
                             }
@@ -102,6 +103,7 @@
                             if ($order['customer_done'] === 't') {
                                 delete_order($order['id']);
                                 SendMessageToChatBot($msg_chatid, 'kkey, order was deleted');
+                                SendMessageToChatBot($order['customer_id'], 'order was deleted');
                             } else {
                                 SendMessageToChatBot($msg_chatid, 'kkey, wait until customer will stop order to');
                             }
