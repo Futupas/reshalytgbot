@@ -72,9 +72,9 @@ function handle($json_message) {
             );
             SendMessage($msg_chatid, 'kkey, wait until customer will accept u');
         } else if ($msg == '/add_order') {
-            if (!is_user_in_db($msg_chatid)) {
-                SendMessage($msg_chatid, 'press /start to start working with me');
-            } else {
+            // if (!is_user_in_db($msg_chatid)) {
+            //     SendMessage($msg_chatid, 'press /start to start working with me');
+            // } else {
                 //create order, get its id
                 $order_id = create_order($msg_chatid);
                 //set user step
@@ -83,7 +83,27 @@ function handle($json_message) {
                 set_user_current_order_fill($msg_chatid, $order_id);
                 //send message
                 SendMessage($msg_chatid, 'kkey, now send me name for ur order (32 chars max)');
+            // }
+
+        } else if ($msg == '/my_orders') {
+            $my_orders_as_executor = get_orders_as_executor($user['id']);
+            $my_orders_as_customer = get_orders_as_customer($user['id']);
+
+            $text = "";
+            if ($my_orders_as_executor !== false) {
+                $text .= "I'm executor in theese orders: \n";
+                foreach ($line as $my_orders_as_executor) {
+                    $text .= "[".$line['name']."](https://t.me/reshalychannel/".$line['post_id'].")\n";
+                }
             }
+            if ($my_orders_as_customer !== false) {
+                $text .= "I'm customer in theese orders: \n";
+                foreach ($line as $my_orders_as_customer) {
+                    $text .= "[".$line['name']."](https://t.me/reshalychannel/".$line['post_id'].")\n";
+                }
+            }
+
+            SendMessageWithMarkdown($msg_chatid, $text);
 
         } else {
             $user = get_user($msg_chatid);
@@ -111,7 +131,7 @@ $text =
 "Order
 *".$line['name']."*
 ".$line['description']."
-Price: ".$line['price']." uah";
+Price: ".$line['price']."";
                     $data_to_send = new stdClass;
                         $data_to_send->chat_id = $msg_chatid;
                         $data_to_send->text = $text;

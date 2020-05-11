@@ -1,2 +1,3 @@
-start - Starts
+start - starts
 add_order - adds order
+my_orders - show your orders

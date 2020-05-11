@@ -131,7 +131,7 @@ function delete_order($order_id) {
 "Order
 *".$order['name']."*
 ".$order['description']."
-Price: ".$order['price']." uah
+Price: ".$order['price']."
 Done.";
     $data_to_send->parse_mode = 'markdown';
     $data_to_send->disable_web_page_preview = true;
@@ -226,7 +226,7 @@ function publish_order($order_id) {
 "Order
 *".$line['name']."*
 ".$line['description']."
-Price: ".$line['price']." uah";
+Price: ".$line['price']."";
 
     $data_to_send = new stdClass;
     $data_to_send->chat_id = -1001271762698;
@@ -324,6 +324,52 @@ function get_row_from_chat_messages_table($chat_id, $message_id) {
     }
 
     $line = pg_fetch_array($result, 0, PGSQL_ASSOC);
+
+    pg_free_result($result);
+    pg_close($dbconn);
+    return $line;
+}
+
+function get_orders_as_executor($user_id) {
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = "SELECT * FROM orders WHERE executor_id=$user_id";
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    $rows = pg_num_rows($result);
+
+    if ($rows < 1) {
+        pg_free_result($result);
+        pg_close($dbconn);
+        return false;
+        //no order in db
+    }
+
+    $line = pg_fetch_all($result, PGSQL_ASSOC);
+
+    pg_free_result($result);
+    pg_close($dbconn);
+    return $line;
+}
+
+function get_orders_as_customer($user_id) {
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = "SELECT * FROM orders WHERE customer_id=$user_id";
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    $rows = pg_num_rows($result);
+
+    if ($rows < 1) {
+        pg_free_result($result);
+        pg_close($dbconn);
+        return false;
+        //no order in db
+    }
+
+    $line = pg_fetch_all($result, PGSQL_ASSOC);
 
     pg_free_result($result);
     pg_close($dbconn);
