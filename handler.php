@@ -90,15 +90,20 @@ function handle($json_message) {
             $my_orders_as_customer = get_orders_as_customer($user['id']);
 
             $text = "";
+
+            if ($my_orders_as_executor === false && $my_orders_as_customer == false) {
+                $text = "u hane no orders";
+            }
+
             if ($my_orders_as_executor !== false) {
                 $text .= "I'm executor in theese orders: \n";
-                foreach ($line as $my_orders_as_executor) {
+                foreach ($my_orders_as_executor as $line) {
                     $text .= "[".$line['name']."](https://t.me/reshalychannel/".$line['post_id'].")\n";
                 }
             }
             if ($my_orders_as_customer !== false) {
                 $text .= "I'm customer in theese orders: \n";
-                foreach ($line as $my_orders_as_customer) {
+                foreach ($my_orders_as_customer as $line) {
                     $text .= "[".$line['name']."](https://t.me/reshalychannel/".$line['post_id'].")\n";
                 }
             }
