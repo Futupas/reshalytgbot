@@ -29,6 +29,10 @@ function handle_callback($json_message) {
             SendMessageWithMarkdown($customer_id, "[Press this link](https://t.me/reshalychatbot?start=".$order['id'].") to chat with executor of order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].") (his name is ".$user_executor['name'].")");
             SendMessageWithMarkdown($executor_id, "[Press this link](https://t.me/reshalychatbot?start=".$order['id'].") to chat with customer of order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].") (his name is ".$user_customer['name'].")");
 
+
+            $file = "";
+            if ($order['file_id'] != null) $file = "[.](https://t.me/reshalymedia/".$order['file_id'].")";
+
                 $data_to_send = new stdClass;
                 $data_to_send->chat_id = -1001271762698;
                 $data_to_send->message_id = $order['post_id'];
@@ -36,10 +40,10 @@ function handle_callback($json_message) {
 "Order
 *".$order['name']."*
 ".$order['description']."
-Price: ".$order['price']."
+Price: ".$order['price']."$file
 In process.";
                 $data_to_send->parse_mode = 'markdown';
-                $data_to_send->disable_web_page_preview = true;
+                $data_to_send->disable_web_page_preview = false;
                 $data_to_send->reply_markup = '';
                 $response = file_get_contents(
                     'https://api.telegram.org/bot'.getenv('bot_token').'/editMessageText?'.http_build_query($data_to_send, '', '&')

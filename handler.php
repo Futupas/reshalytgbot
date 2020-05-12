@@ -215,13 +215,13 @@ function handle($json_message) {
                     $line = get_order($order_id);
 
                     $file = "";
-                    if ($line['post_id'] != null) $file = "[.](https://t.me/reshalymedia/".$line['post_id'].")";
+                    if ($line['file_id'] != null) $file = "[.](https://t.me/reshalymedia/".$line['file_id'].")";
 
 $text = 
 "Order
 *".$line['name']."*
 ".$line['description']."
-Price: ".$line['price']."".$file;
+Price: ".$line['price']."$file";
                     $data_to_send = new stdClass;
                         $data_to_send->chat_id = $msg_chatid;
                         $data_to_send->text = $text;
