@@ -92,7 +92,7 @@ function handle($json_message) {
             $text = "";
 
             if ($my_orders_as_executor === false && $my_orders_as_customer == false) {
-                $text = "u hane no orders";
+                $text = "u have no orders";
             }
 
             if ($my_orders_as_executor !== false) {
@@ -129,25 +129,8 @@ function handle($json_message) {
                 case 3:
                     $order_id = $user['current_order_fill'];
                     change_order($order_id, 'price', "'$msg'");
-                    set_user_step($msg_chatid, 4);
-                    $line = get_order($order_id);
-
-$text = 
-"Order
-*".$line['name']."*
-".$line['description']."
-Price: ".$line['price']."";
-                    $data_to_send = new stdClass;
-                        $data_to_send->chat_id = $msg_chatid;
-                        $data_to_send->text = $text;
-                        $data_to_send->parse_mode = 'markdown';
-                        $data_to_send->disable_web_page_preview = true;
-                        $data_to_send->reply_markup = json_encode((object)(array(
-                            'keyboard' => array(array("Публиковать", "Отменить"))
-                        )));
-                        $response = file_get_contents(
-                            'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
-                        );
+                    set_user_step($msg_chatid, 7);
+                    SendMessage($msg_chatid, "kkey, now send me a (ONE) file that will be added to ur order. if u dont wanna add any files, send me \"```xyu```\" (u can easily copy this text)");
                     break;
                 case 4:
                     $order_id = $user['current_order_fill'];
@@ -204,6 +187,52 @@ Price: ".$line['price']."";
                     change_user($msg_chatid, 'univ', "'$msg'");
                     set_user_step($msg_chatid, 0);
                     SendMessage($msg_chatid, "kkey, now u can add an order by sending me /add_order command");
+                break;
+                case 7: 
+                    //
+                    if (property_exists($json_message->message, 'document')) {
+                        $file_id = $json_message->message->document->file_id;
+
+
+                        $data_to_send = new stdClass;
+                        $data_to_send->chat_id = "@reshalymedia";
+                        $data_to_send->document = $file_id;
+                        $response = (object)json_decode(file_get_contents(
+                            'https://api.telegram.org/bot'.getenv('bot_token').'/sendDocument?'.http_build_query($data_to_send, '', '&')
+                        ));
+
+                        if (!$response->ok) SendMessage($msg_chatid, 'error processing ur file');
+                        else {
+                            $post_id = $response->result->message_id;
+                        }
+
+                        $order_id = $user['current_order_fill'];
+                        change_order($order_id, 'file_id', "'".$post_id."'");
+                        SendMessage($msg_chatid, "kkey, this document was added to ur order");
+                    }
+
+                    set_user_step($msg_chatid, 4);
+                    $line = get_order($order_id);
+
+                    $file = "";
+                    if ($line['post_id'] != null) $file = "[.](https://t.me/reshalymedia/".$line['post_id'].")";
+
+$text = 
+"Order
+*".$line['name']."*
+".$line['description']."
+Price: ".$line['price']."".$file;
+                    $data_to_send = new stdClass;
+                        $data_to_send->chat_id = $msg_chatid;
+                        $data_to_send->text = $text;
+                        $data_to_send->parse_mode = 'markdown';
+                        $data_to_send->disable_web_page_preview = false;
+                        $data_to_send->reply_markup = json_encode((object)(array(
+                            'keyboard' => array(array("Публиковать", "Отменить"))
+                        )));
+                        $response = file_get_contents(
+                            'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
+                        );
                 break;
                     default:
                 SendMessage($msg_chatid, 'send me a command');
