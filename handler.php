@@ -130,7 +130,7 @@ function handle($json_message) {
                     $order_id = $user['current_order_fill'];
                     change_order($order_id, 'price', "'$msg'");
                     set_user_step($msg_chatid, 7);
-                    SendMessage($msg_chatid, "kkey, now send me a (ONE) file that will be added to ur order. if u dont wanna add any files, send me \"```xyu```\" (u can easily copy this text)");
+                    SendMessage($msg_chatid, "kkey, now send me a (ONE) file that will be added to ur order. if u dont wanna add any files, send me \"xyu\"");
                     break;
                 case 4:
                     $order_id = $user['current_order_fill'];
@@ -189,7 +189,7 @@ function handle($json_message) {
                     SendMessage($msg_chatid, "kkey, now u can add an order by sending me /add_order command");
                 break;
                 case 7: 
-                    //
+                    $order_id = $user['current_order_fill'];
                     if (property_exists($json_message->message, 'document')) {
                         $file_id = $json_message->message->document->file_id;
 
@@ -201,12 +201,14 @@ function handle($json_message) {
                             'https://api.telegram.org/bot'.getenv('bot_token').'/sendDocument?'.http_build_query($data_to_send, '', '&')
                         ));
 
-                        if (!$response->ok) SendMessage($msg_chatid, 'error processing ur file');
+                        if (!$response->ok) {
+                            SendMessage($msg_chatid, 'error processing ur file');
+                            exit(0);
+                        } 
                         else {
                             $post_id = $response->result->message_id;
                         }
 
-                        $order_id = $user['current_order_fill'];
                         change_order($order_id, 'file_id', "'".$post_id."'");
                         SendMessage($msg_chatid, "kkey, this document was added to ur order");
                     }
