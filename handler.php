@@ -6,6 +6,7 @@ function handle($json_message) {
         handle_callback($json_message);
         exit(0);
     }
+    if ($json_message->chat->id == getenv('admin_chat')) exit(0);
 
     $sender_is_bot = $json_message->message->from->is_bot;
     $msg_senderid = $json_message->message->from->id;
