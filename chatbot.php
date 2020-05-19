@@ -35,6 +35,7 @@
             // $user_name = $json_message->callback_query->from->id;
             $choise_data = $json_message->callback_query->data;
             $msg_id = $json_message->callback_query->message->message_id;
+
             file_get_contents('https://api.telegram.org/bot'.getenv('chat_bot_token').'/answerCallbackQuery?'.
             http_build_query((object)array(
                 'callback_query_id' => $callback_query_id,
@@ -46,6 +47,17 @@
 
             SendMessageToChatBot($order['executor_id'], 'ok, u received lv');
             delete_order($order_id);
+
+            $data_to_send = new stdClass;
+            $data_to_send->chat_id = getenv('admin_chat');
+            $data_to_send->message_id = $msg_id;
+            $data_to_send->text = "order ".$order['name']." was succ fully closed";
+            $data_to_send->parse_mode = 'markdown';
+            $data_to_send->disable_web_page_preview = false;
+            $data_to_send->reply_markup = '';
+            $response = file_get_contents(
+                'https://api.telegram.org/bot'.getenv('chat_bot_token').'/editMessageText?'.http_build_query($data_to_send, '', '&')
+            );
         }
 
         
