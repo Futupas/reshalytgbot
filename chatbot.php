@@ -22,6 +22,7 @@
                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/answerPreCheckoutQuery?'.http_build_query($data_to_send, '', '&')
             ));
             SendMessageToChatBot($order['executor_id'], 'u can now do this order ('.$order['name'].') because customer had paid for it');
+            SendMessageToChatBot($order['customer_id'], 'executor of order '.$order['name'].' got a msg that he can now do this order');
             exit(0);
         }
         if (property_exists($json_message, 'message') && property_exists($json_message->message, 'successful_payment')) {
@@ -131,8 +132,8 @@
                         }
                     } else if (strpos($msg, '/price ') === 0) {
                         $price = substr($msg, strlen('/price '), strlen($msg)-strlen('/price '));
-                        if (!is_numeric($price) || strpos($price, "," !== false) || strpos($price, "." !== false)) {
-                            SendMessageToChatBot($msg_chatid, 'ur price is fucking bad, send me a fucking integer');
+                        if (!is_numeric($price) || strpos($price, "," !== false) || strpos($price, "." !== false) || strpos($price, "-" !== false)) {
+                            SendMessageToChatBot($msg_chatid, 'ur price is fucking bad, send me a fucking positive integer');
                             exit(0);
                         }
                         $order = get_order($chat_message['order_id']);
@@ -140,6 +141,10 @@
                         if ($msg_chatid == $order['customer_id']) {
                             change_order($order['id'], 'customer_price', $price);
                             if ($order['executor_price'] !== null) {
+                                if ($order['executor_price'] != $price) {
+                                    SendMessageToChatBot($msg_chatid, 'offered prices must be equal');
+                                    exit(0);
+                                }
                                 // SendMessageToChatBot($msg_chatid, 'pay!');
                                 $data_to_send = new stdClass;
                                 $data_to_send->chat_id = $msg_chatid;
@@ -156,11 +161,16 @@
                                 SendMessageToChatBot($order['executor_id'], 'kkey, price was confirmed, wait 4 a msg');
                             } else {
                                 SendMessageToChatBot($msg_chatid, 'kkey, ur price was set, wait until executor will accept ur price');
+                                SendMessageToChatBot($order['executor_id'], 'customer offered price '.$price.' uah');
                             }
                             exit(0);
                         } else if ($msg_chatid == $order['executor_id']) {
                             change_order($order['id'], 'executor_price', $price);
                             if ($order['customer_price'] !== null) {
+                                if ($order['customer_price'] != $price) {
+                                    SendMessageToChatBot($msg_chatid, 'offered prices must be equal');
+                                    exit(0);
+                                }
                                 $data_to_send = new stdClass;
                                 $data_to_send->chat_id = $order['customer_id'];
                                 $data_to_send->title = "Order";
@@ -176,6 +186,7 @@
                                 SendMessageToChatBot($msg_chatid, 'kkey, price was confirmed, wait 4 a msg');
                             } else {
                                 SendMessageToChatBot($msg_chatid, 'kkey, ur price was set, wait until customer will accept ur price');
+                                SendMessageToChatBot($order['customer_id'], 'executor offered price '.$price.' uah');
                             }
                             exit(0);
                         } else {
