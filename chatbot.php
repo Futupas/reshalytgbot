@@ -10,6 +10,23 @@
         $requestString = file_get_contents('php://input');
         $json_message = json_decode($requestString);
         add_log($requestString);
+
+        if (property_exists($json_message, 'pre_checkout_query')) {
+            $order_id = $json_message->pre_checkout_query->invoice_payload;
+            $pre_checkout_query_id = $json_message->pre_checkout_query->id;
+            $order = get_order($order_id);
+            $data_to_send = new stdClass;
+            $data_to_send->pre_checkout_query_id = $pre_checkout_query_id;
+            $data_to_send->ok = true;
+            $response = (object)json_decode(file_get_contents(
+                'https://api.telegram.org/bot'.getenv('bot_token').'/answerPreCheckoutQuery?'.http_build_query($data_to_send, '', '&')
+            ));
+            SendMessageToChatBot($order['executor_id'], 'u can now do this order because customer had paid for it');
+            exit(0);
+        }
+        if (property_exists($json_message, 'message') && property_exists($json_message->message, 'successful_payment')) {
+            exit(0);
+        }
     
         $sender_is_bot = $json_message->message->from->is_bot;
         $msg_senderid = $json_message->message->from->id;
@@ -106,6 +123,59 @@
                                 SendMessageToChatBot($order['customer_id'], 'order was deleted');
                             } else {
                                 SendMessageToChatBot($msg_chatid, 'kkey, wait until customer will stop order to');
+                            }
+                            exit(0);
+                        } else {
+                            SendMessageToChatBot($msg_chatid, 'u can not use this bot with no order');
+                            exit(0);
+                        }
+                    } else if (strpos($msg, '/price ') === 0) {
+                        $price = substr($msg, strlen('/price '), strlen($msg)-strlen('/price '));
+                        if (!is_numeric($price) || strpos($price, "," !== false) || strpos($price, "." !== false)) {
+                            SendMessageToChatBot($msg_chatid, 'ur price is fucking bad, send me a fucking integer');
+                            exit(0);
+                        }
+                        $order = get_order($chat_message['order_id']);
+                        // add_log(print_r($order, true));
+                        if ($msg_chatid == $order['customer_id']) {
+                            change_order($order['id'], 'customer_price', $price);
+                            if ($order['executor_price'] !== null) {
+                                // SendMessageToChatBot($msg_chatid, 'pay!');
+                                $data_to_send = new stdClass;
+                                $data_to_send->chat_id = $msg_chatid;
+                                $data_to_send->title = "Order";
+                                $data_to_send->description = $order['name'];
+                                $data_to_send->payload = $order['id'];
+                                $data_to_send->provider_token = getenv('pay_token');
+                                $data_to_send->start_parameter = '15';
+                                $data_to_send->currency = "UAH";
+                                $data_to_send->prices = '[{"label":"'.$price.' uah", "amount": '.$price.'00}]';
+                                $response = (object)json_decode(file_get_contents(
+                                    'https://api.telegram.org/bot'.getenv('bot_token').'/sendInvoice?'.http_build_query($data_to_send, '', '&')
+                                ));
+                                SendMessageToChatBot($order['executor_id'], 'kkey, price was confirmed, wait 4 a msg');
+                            } else {
+                                SendMessageToChatBot($msg_chatid, 'kkey, ur price was set, wait until executor will accept ur price');
+                            }
+                            exit(0);
+                        } else if ($msg_chatid == $order['executor_id']) {
+                            change_order($order['id'], 'executor_price', $price);
+                            if ($order['customer_price'] !== null) {
+                                $data_to_send = new stdClass;
+                                $data_to_send->chat_id = $order['customer_id'];
+                                $data_to_send->title = "Order";
+                                $data_to_send->description = $order['name'];
+                                $data_to_send->payload = $order['id'];
+                                $data_to_send->provider_token = getenv('pay_token');
+                                $data_to_send->start_parameter = '15';
+                                $data_to_send->currency = "UAH";
+                                $data_to_send->prices = '[{"label":"'.$price.' uah", "amount": '.$price.'00}]';
+                                $response = (object)json_decode(file_get_contents(
+                                    'https://api.telegram.org/bot'.getenv('bot_token').'/sendInvoice?'.http_build_query($data_to_send, '', '&')
+                                ));
+                                SendMessageToChatBot($msg_chatid, 'kkey, price was confirmed, wait 4 a msg');
+                            } else {
+                                SendMessageToChatBot($msg_chatid, 'kkey, ur price was set, wait until customer will accept ur price');
                             }
                             exit(0);
                         } else {

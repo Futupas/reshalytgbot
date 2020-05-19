@@ -18,7 +18,7 @@ port=5432")
     or die('Не удалось соединиться: ' . pg_last_error());
 
 // Выполнение SQL-запроса
-$query = 'ALTER TABLE orders ADD COLUMN "file_id" varchar(128) null DEFAULT null';
+$query = 'ALTER TABLE orders ADD COLUMN customer_price int null default null';
 $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
 
 // Вывод результатов в HTML
