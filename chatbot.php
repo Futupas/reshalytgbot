@@ -9,7 +9,6 @@
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $requestString = file_get_contents('php://input');
         $json_message = json_decode($requestString);
-        if ($json_message->chat->id == getenv('admin_chat')) exit(0);
         add_log($requestString);
 
         if (property_exists($json_message, 'pre_checkout_query')) {
@@ -29,6 +28,28 @@
         if (property_exists($json_message, 'message') && property_exists($json_message->message, 'successful_payment')) {
             exit(0);
         }
+        if (property_exists($json_message, 'callback_query') && $json_message->callback_query->message->chat->id == getenv('admin_chat')) {
+            $callback_query_id = $json_message->callback_query->id;
+            $msg_chatid = $json_message->callback_query->message->chat->id;
+            $user_id = $json_message->callback_query->from->id;
+            // $user_name = $json_message->callback_query->from->id;
+            $choise_data = $json_message->callback_query->data;
+            $msg_id = $json_message->callback_query->message->message_id;
+            file_get_contents('https://api.telegram.org/bot'.getenv('chat_bot_token').'/answerCallbackQuery?'.
+            http_build_query((object)array(
+                'callback_query_id' => $callback_query_id,
+                'text' => 'kkey'
+            )));
+
+            $order_id = $choise_data;
+            $order = get_order($order_id);
+
+            SendMessageToChatBot($order['executor_id'], 'ok, u received lv');
+            delete_order($order_id);
+        }
+
+        
+        if ($json_message->chat->id == getenv('admin_chat')) exit(0);
     
         $sender_is_bot = $json_message->message->from->is_bot;
         $msg_senderid = $json_message->message->from->id;
@@ -221,11 +242,11 @@
                             $data_to_send->reply_markup = json_encode((object)(array(
                                 'inline_keyboard' => array(array((object)(array(
                                     'text' => 'paid',
-                                    'callback_data' => 'p'.$order['id']
+                                    'callback_data' => $order['id']
                                 ))))
                             )));
                             $response = file_get_contents(
-                                'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
+                                'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
                             );
                             SendMessageToChatBot($msg_chatid, 'kkey, wait 4 a msg that lv came to u');
                             //here
