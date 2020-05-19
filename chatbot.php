@@ -19,9 +19,9 @@
             $data_to_send->pre_checkout_query_id = $pre_checkout_query_id;
             $data_to_send->ok = true;
             $response = (object)json_decode(file_get_contents(
-                'https://api.telegram.org/bot'.getenv('bot_token').'/answerPreCheckoutQuery?'.http_build_query($data_to_send, '', '&')
+                'https://api.telegram.org/bot'.getenv('chat_bot_token').'/answerPreCheckoutQuery?'.http_build_query($data_to_send, '', '&')
             ));
-            SendMessageToChatBot($order['executor_id'], 'u can now do this order because customer had paid for it');
+            SendMessageToChatBot($order['executor_id'], 'u can now do this order ('.$order['name'].') because customer had paid for it');
             exit(0);
         }
         if (property_exists($json_message, 'message') && property_exists($json_message->message, 'successful_payment')) {
@@ -151,7 +151,7 @@
                                 $data_to_send->currency = "UAH";
                                 $data_to_send->prices = '[{"label":"'.$price.' uah", "amount": '.$price.'00}]';
                                 $response = (object)json_decode(file_get_contents(
-                                    'https://api.telegram.org/bot'.getenv('bot_token').'/sendInvoice?'.http_build_query($data_to_send, '', '&')
+                                    'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendInvoice?'.http_build_query($data_to_send, '', '&')
                                 ));
                                 SendMessageToChatBot($order['executor_id'], 'kkey, price was confirmed, wait 4 a msg');
                             } else {
@@ -171,7 +171,7 @@
                                 $data_to_send->currency = "UAH";
                                 $data_to_send->prices = '[{"label":"'.$price.' uah", "amount": '.$price.'00}]';
                                 $response = (object)json_decode(file_get_contents(
-                                    'https://api.telegram.org/bot'.getenv('bot_token').'/sendInvoice?'.http_build_query($data_to_send, '', '&')
+                                    'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendInvoice?'.http_build_query($data_to_send, '', '&')
                                 ));
                                 SendMessageToChatBot($msg_chatid, 'kkey, price was confirmed, wait 4 a msg');
                             } else {
