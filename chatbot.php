@@ -240,7 +240,7 @@
                                 $data_to_send->provider_token = getenv('pay_token');
                                 $data_to_send->start_parameter = '15';
                                 $data_to_send->currency = "UAH";
-                                $data_to_send->prices = '[{"label":"'.$price.' uah", "amount": '.$price.'00}]';
+                                $data_to_send->prices = '[{"label":"'.$price.' uah", "amount": '.($price*100/.96).'}]';
                                 $response = (object)json_decode(file_get_contents(
                                     'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendInvoice?'.http_build_query($data_to_send, '', '&')
                                 ));

@@ -1,3 +1,10 @@
-start - starts
-add_order - adds order
-my_orders - show your orders
+start - поехали!
+add_order - новый заказ
+my_orders - ваши заказы
+info - информация
+feedback - оставить отзыв
+
+
+done - завершить заказ
+price - установить цену
+card - переслать карту
