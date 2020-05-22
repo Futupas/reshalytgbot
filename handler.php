@@ -111,6 +111,15 @@ function handle($json_message) {
 
             SendMessageWithMarkdown($msg_chatid, $text);
 
+        } else if ($msg == '/info') {
+
+            SendMessageWithMarkdown($msg_chatid, "info about this bot");
+
+        } else if ($msg == '/feedback') {
+
+            SendMessageWithMarkdown($msg_chatid, "kkey, send me ur anonymous feedback");
+            set_user_step($msg_chatid, 8);
+
         } else {
             $user = get_user($msg_chatid);
             $step = $user['step'];
@@ -257,6 +266,18 @@ Price: ".$line['price']."$file";
                         $response = file_get_contents(
                             'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
                         );
+                break;
+                case 8: 
+                    $data_to_send = new stdClass;
+                    $data_to_send->chat_id = getenv('admin_chat');
+                    $data_to_send->from_chat_id = $msg_chatid;
+                    $data_to_send->message_id = $msg_id;
+                    $response = file_get_contents(
+                        'https://api.telegram.org/bot'.getenv('bot_token').'/forwardMessage?'.http_build_query($data_to_send, '', '&')
+                    );
+                            
+                    SendMessageWithMarkdown($msg_chatid, "kkey, thanks u 4 ur feedback");
+                    set_user_step($msg_chatid, 0);
                 break;
                     default:
                 SendMessage($msg_chatid, 'send me a command');
