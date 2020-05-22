@@ -307,7 +307,7 @@
                             $response = json_decode(file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendVoice?'.http_build_query($data_to_send, '', '&')
                             ));
-                            add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], $msg);
+                            add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], 'voice:'.$json_message->message->voice->file_id);
                             exit(0);
                         }
                         if (property_exists($json_message->message, 'document')) {
@@ -318,7 +318,7 @@
                             $response = json_decode(file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendDocument?'.http_build_query($data_to_send, '', '&')
                             ));
-                            add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], $msg);
+                            add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], 'document:'.$json_message->message->document->file_id);
                             exit(0);
                         }
                         if (property_exists($json_message->message, 'sticker')) {
@@ -329,7 +329,7 @@
                             $response = json_decode(file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendSticker?'.http_build_query($data_to_send, '', '&')
                             ));
-                            add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], $msg);
+                            add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], 'sticker:'.$json_message->message->sticker->file_id);
                             exit(0);
                         }
                         $response = SendMessageToChatBot($msg_chatid, 'incorrect type of media');
