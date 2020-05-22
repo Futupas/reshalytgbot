@@ -300,12 +300,13 @@
                             exit(0);
                         }
                         if (property_exists($json_message->message, 'voice')) {
-                            $response = SendMessageWithMarkdownToChatBot($chat_message['destination_chat_id'], "*".$user['name']."*:");
-                            add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], $msg);
+                            // $response = SendMessageWithMarkdownToChatBot($chat_message['destination_chat_id'], "*".$user['name']."*:");
+                            // add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], $msg);
                             $voice = $json_message->message->voice;
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = $chat_message['destination_chat_id'];
                             $data_to_send->voice = $json_message->message->voice->file_id;
+                            $data_to_send->caption = '(from '.$user['name'].')';
                             $response = json_decode(file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendVoice?'.http_build_query($data_to_send, '', '&')
                             ));
@@ -313,12 +314,13 @@
                             exit(0);
                         }
                         if (property_exists($json_message->message, 'document')) {
-                            $response = SendMessageWithMarkdownToChatBot($chat_message['destination_chat_id'], "*".$user['name']."*:");
-                            add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], $msg);
+                            // $response = SendMessageWithMarkdownToChatBot($chat_message['destination_chat_id'], "*".$user['name']."*:");
+                            // add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], $msg);
                             $document = $json_message->message->document;
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = $chat_message['destination_chat_id'];
                             $data_to_send->document = $json_message->message->document->file_id;
+                            $data_to_send->caption = '(from '.$user['name'].')';
                             $response = json_decode(file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendDocument?'.http_build_query($data_to_send, '', '&')
                             ));
@@ -326,12 +328,13 @@
                             exit(0);
                         }
                         if (property_exists($json_message->message, 'sticker')) {
-                            $response = SendMessageWithMarkdownToChatBot($chat_message['destination_chat_id'], "*".$user['name']."*:");
-                            add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], $msg);
+                            // $response = SendMessageWithMarkdownToChatBot($chat_message['destination_chat_id'], "*".$user['name']."*:");
+                            // add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], $msg);
                             $sticker = $json_message->message->sticker;
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = $chat_message['destination_chat_id'];
                             $data_to_send->sticker = $json_message->message->sticker->file_id;
+                            $data_to_send->caption = '(from '.$user['name'].')';
                             $response = json_decode(file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendSticker?'.http_build_query($data_to_send, '', '&')
                             ));
