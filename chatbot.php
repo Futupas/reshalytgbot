@@ -293,9 +293,48 @@
                             exit(0);
                         }
                     } else {
-                        $text = "*".$user['name']."*:\n$msg";
-                        $response = SendMessageWithMarkdownToChatBot($chat_message['destination_chat_id'], $text);
-                        add_row_to_chat_messages_table($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id']);
+                        if (property_exists($json_message->message, 'text')) {
+                            $text = "*".$user['name']."*:\n$msg";
+                            $response = SendMessageWithMarkdownToChatBot($chat_message['destination_chat_id'], $text);
+                            add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], $msg);
+                            exit(0);
+                        }
+                        if (property_exists($json_message->message, 'voice')) {
+                            $voice = $json_message->message->voice;
+                            $data_to_send = new stdClass;
+                            $data_to_send->chat_id = $chat_message['destination_chat_id'];
+                            $data_to_send->voice = $json_message->message->voice->file_id;
+                            $response = file_get_contents(
+                                'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendVoice?'.http_build_query($data_to_send, '', '&')
+                            );
+                            add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], $msg);
+                            exit(0);
+                        }
+                        if (property_exists($json_message->message, 'document')) {
+                            $document = $json_message->message->document;
+                            $data_to_send = new stdClass;
+                            $data_to_send->chat_id = $chat_message['destination_chat_id'];
+                            $data_to_send->document = $json_message->message->document->file_id;
+                            $response = file_get_contents(
+                                'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendDocument?'.http_build_query($data_to_send, '', '&')
+                            );
+                            add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], $msg);
+                            exit(0);
+                        }
+                        if (property_exists($json_message->message, 'sticker')) {
+                            $sticker = $json_message->message->sticker;
+                            $data_to_send = new stdClass;
+                            $data_to_send->chat_id = $chat_message['destination_chat_id'];
+                            $data_to_send->sticker = $json_message->message->sticker->file_id;
+                            $response = file_get_contents(
+                                'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendSticker?'.http_build_query($data_to_send, '', '&')
+                            );
+                            add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], $msg);
+                            exit(0);
+                        }
+                        $response = SendMessageToChatBot($msg_chatid, 'incorrect type of media');
+                        add_row_to_chat_messages_table($msg_chatid, $response->result->message_id, ($msg_chatid == $order['customer_id'] ? $order['executor_id'] : $order['customer_id']), $order['id']);
+                        exit(0);
                     }
                 } else {
                     SendMessageToChatBot($msg_chatid, 'u can not send me msg that is not a reply');

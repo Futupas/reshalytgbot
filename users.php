@@ -314,6 +314,16 @@ function add_row_to_chat_messages_table($chat_id, $message_id, $destination_chat
     pg_free_result($result);
     pg_close($dbconn);
 }
+function add_row_to_chat_messages_table_with_text($chat_id, $message_id, $destination_chat_id, $order_id, $text) {
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = "INSERT INTO \"chat_messages\" (chat_id, message_id, destination_chat_id, order_id, message_text) VALUES ($chat_id, $message_id, $destination_chat_id, $order_id, '$text')";
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    pg_free_result($result);
+    pg_close($dbconn);
+}
 
 function get_row_from_chat_messages_table($chat_id, $message_id) {
     $dbconn = pg_connect($GLOBALS['connection_string'])
