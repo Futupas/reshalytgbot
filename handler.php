@@ -18,7 +18,7 @@ function handle($json_message) {
     if ($sender_is_bot) {
         SendMessage($msg_chatid, 'bots are not allowed.');
     } else {
-        //check for user
+        //check for user 
         $user = get_user($msg_chatid);
         if ($user === false) {
             SendMessage($msg_chatid, 'u are not registered. send me your name');
