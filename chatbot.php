@@ -154,6 +154,8 @@
                             } else {
                                 $response = SendMessageToChatBot($msg_chatid, 'kkey, wait until executor will stop order to');
                                 add_row_to_chat_messages_table($msg_chatid, $response->result->message_id, ($msg_chatid == $order['customer_id'] ? $order['executor_id'] : $order['customer_id']), $order['id']);
+                                $response = SendMessageToChatBot($order['executor_id'], 'customer proposed to stop the order. answer /done to confirm it');
+                                add_row_to_chat_messages_table($order['executor_id'], $response->result->message_id, $order['customer_id'], $order['id']);
                             }
                             exit(0);
                         } else if ($msg_chatid == $order['executor_id']) {
@@ -169,6 +171,8 @@
                                 $response = SendMessageToChatBot($msg_chatid, 'kkey, wait until customer will stop order to');
                                 add_row_to_chat_messages_table($msg_chatid, $response->result->message_id, ($msg_chatid == $order['customer_id'] ? $order['executor_id'] : $order['customer_id']), $order['id']);
 
+                                $response = SendMessageToChatBot($order['customer_id'], 'executor proposed to stop the order. answer /done to confirm it');
+                                add_row_to_chat_messages_table($order['customer_id'], $response->result->message_id, $order['executor_id'], $order['id']);
                             }
                             exit(0);
                         } else {
