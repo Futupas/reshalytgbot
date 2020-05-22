@@ -304,9 +304,9 @@
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = $chat_message['destination_chat_id'];
                             $data_to_send->voice = $json_message->message->voice->file_id;
-                            $response = file_get_contents(
+                            $response = json_decode(file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendVoice?'.http_build_query($data_to_send, '', '&')
-                            );
+                            ));
                             add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], $msg);
                             exit(0);
                         }
@@ -315,9 +315,9 @@
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = $chat_message['destination_chat_id'];
                             $data_to_send->document = $json_message->message->document->file_id;
-                            $response = file_get_contents(
+                            $response = json_decode(file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendDocument?'.http_build_query($data_to_send, '', '&')
-                            );
+                            ));
                             add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], $msg);
                             exit(0);
                         }
@@ -326,9 +326,9 @@
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = $chat_message['destination_chat_id'];
                             $data_to_send->sticker = $json_message->message->sticker->file_id;
-                            $response = file_get_contents(
+                            $response = json_decode(file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendSticker?'.http_build_query($data_to_send, '', '&')
-                            );
+                            ));
                             add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], $msg);
                             exit(0);
                         }
