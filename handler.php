@@ -114,8 +114,13 @@ function handle($json_message) {
         } else {
             $user = get_user($msg_chatid);
             $step = $user['step'];
+            $msg_len = strlen($msg);
             switch ($step) {
                 case 1:
+                    if ($msg_len < 1 || $msg_len > 32) {
+                        SendMessage($msg_chatid, 'send me text from 1 to 32 chars');
+                        exit(0);
+                    }
                     $order_id = $user['current_order_fill'];
                     change_order($order_id, 'name', "'$msg'");
                     set_user_step($msg_chatid, 2);
@@ -126,8 +131,16 @@ function handle($json_message) {
                     change_order($order_id, 'description', "'$msg'");
                     set_user_step($msg_chatid, 3);
                     SendMessage($msg_chatid, 'kkey, now send me price of ur order');
+                    if ($msg_len < 1 || $msg_len > 256) {
+                        SendMessage($msg_chatid, 'send me text from 1 to 256 chars');
+                        exit(0);
+                    }
                     break;
                 case 3:
+                    if ($msg_len < 1 || $msg_len > 16) {
+                        SendMessage($msg_chatid, 'send me text from 1 to 16 chars');
+                        exit(0);
+                    }
                     $order_id = $user['current_order_fill'];
                     change_order($order_id, 'price', "'$msg'");
                     set_user_step($msg_chatid, 7);
@@ -180,11 +193,19 @@ function handle($json_message) {
                     break;
                 
                 case 5: 
+                    if ($msg_len < 1 || $msg_len > 32) {
+                        SendMessage($msg_chatid, 'send me text from 1 to 32 chars');
+                        exit(0);
+                    }
                     change_user($msg_chatid, 'name', "'$msg'");
                     set_user_step($msg_chatid, 6);
                     SendMessage($msg_chatid, "kkey, now send me ur university");
                 break;
                 case 6: 
+                    if ($msg_len < 1 || $msg_len > 32) {
+                        SendMessage($msg_chatid, 'send me text from 1 to 32 chars');
+                        exit(0);
+                    }
                     change_user($msg_chatid, 'univ', "'$msg'");
                     set_user_step($msg_chatid, 0);
                     SendMessage($msg_chatid, "kkey, now u can add an order by sending me /add_order command");
