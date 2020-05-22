@@ -135,13 +135,13 @@
                 if (property_exists($json_message->message, 'reply_to_message')) {
                     $reply_to_message_id = $json_message->message->reply_to_message->message_id;
                     $chat_message = get_row_from_chat_messages_table($msg_chatid, $reply_to_message_id);
+                    $order = get_order($chat_message['order_id']);
                     if ($chat_message === false) {
                         SendMessageToChatBot($msg_chatid, 'u replied on a wrong message');
                         exit(0);
                     }
 
                     if ($msg == '/done') {
-                        $order = get_order($chat_message['order_id']);
                         // add_log(print_r($order, true));
                         if ($msg_chatid == $order['customer_id']) {
                             change_order($order['id'], 'customer_done', 'true');
