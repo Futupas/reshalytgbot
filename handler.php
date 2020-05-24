@@ -73,9 +73,6 @@ function handle($json_message) {
             );
             SendMessage($msg_chatid, 'kkey, wait until customer will accept u');
         } else if ($msg == '/add_order') {
-            // if (!is_user_in_db($msg_chatid)) {
-            //     SendMessage($msg_chatid, 'press /start to start working with me');
-            // } else {
                 //create order, get its id
                 $order_id = create_order($msg_chatid);
                 //set user step
@@ -84,7 +81,6 @@ function handle($json_message) {
                 set_user_current_order_fill($msg_chatid, $order_id);
                 //send message
                 SendMessage($msg_chatid, 'kkey, now send me name for ur order (32 chars max)');
-            // }
 
         } else if ($msg == '/my_orders') {
             $my_orders_as_executor = get_orders_as_executor($user['id']);
@@ -170,7 +166,6 @@ function handle($json_message) {
                             set_user_current_order_fill($msg_chatid, 'null');
                             set_user_step($msg_chatid, 0);
                             change_order($order_id, 'post_id', $post_id);
-                            // SendMessage($msg_chatid, "kkey, here's ur order link: https://t.me/reshalychannel/$post_id");
                             
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = $msg_chatid;
@@ -188,7 +183,6 @@ function handle($json_message) {
                     } else if ($msg == 'Отменить') {
                         set_user_step($msg_chatid, 0);
                         delete_order($order_id);
-                        // SendMessage($msg_chatid, "your order was successfully deleted");
                         $data_to_send = new stdClass;
                         $data_to_send->chat_id = $msg_chatid;
                         $data_to_send->text = "your order was successfully deleted";

@@ -14,6 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     handle($requestData);
 
 } else {
-    echo('Prozhektor Perestroyki');
+    echo('Прожектор Перестройки');
 }
 ?>

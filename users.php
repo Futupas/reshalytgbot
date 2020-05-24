@@ -45,7 +45,6 @@ function change_user_rating($user_id, $rating) {
     pg_free_result($result);
     pg_close($dbconn);
 }
-//UPDATE users SET rating=((rating*rating_votes_quantity+0)/(rating_votes_quantity+1)), rating_votes_quantity=rating_votes_quantity+1 WHERE id=649365656
 
 function create_order($customer_id) {
     $dbconn = pg_connect($GLOBALS['connection_string'])
@@ -238,7 +237,6 @@ function publish_order($order_id) {
     pg_close($dbconn);
 
     $customer = get_user($line['cuscomer_id']);
-    // return $line;
 
 
     $file = "";
@@ -263,7 +261,6 @@ Customer rating: ".round($user['rating'], 1)."/5$file";
         ))))
     )));
 
-    // add_log('request: '.'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&'));
     $response = file_get_contents(
         'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
     );
@@ -288,7 +285,6 @@ function is_executor_in_table($order_id, $executor_id) {
         //no order in db
     }
 
-    // $line = pg_fetch_array($result, 0, PGSQL_ASSOC);
 
     pg_free_result($result);
     pg_close($dbconn);

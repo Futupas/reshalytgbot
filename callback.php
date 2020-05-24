@@ -4,7 +4,6 @@ function handle_callback($json_message) {
     $callback_query_id = $json_message->callback_query->id;
     $msg_chatid = $json_message->callback_query->message->chat->id;
     $user_id = $json_message->callback_query->from->id;
-    // $user_name = $json_message->callback_query->from->id;
     $choise_data = $json_message->callback_query->data;
     $msg_id = $json_message->callback_query->message->message_id;
 
