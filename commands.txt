@@ -3,6 +3,7 @@ add_order - новый заказ
 my_orders - ваши заказы
 info - информация
 feedback - оставить отзыв
+my_rating - мой рейтинг
 
 
 done - завершить заказ

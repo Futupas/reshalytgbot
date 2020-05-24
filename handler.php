@@ -56,7 +56,7 @@ function handle($json_message) {
             }
             
             $user_executor = get_user($user_id);
-            $text = $user_executor['name']." wants to do ur order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].").";
+            $text = $user_executor['name']." (rating: ".round($user_executor['rating'], 1).")wants to do ur order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].").";
             $data_to_send = new stdClass;
             $data_to_send->chat_id = $order['customer_id'];
             $data_to_send->text = $text;
@@ -114,6 +114,10 @@ function handle($json_message) {
         } else if ($msg == '/info') {
 
             SendMessageWithMarkdown($msg_chatid, "info about this bot");
+
+        } else if ($msg == '/my_rating') {
+            $rating = round($user['rating'], 1);
+            SendMessageWithMarkdown($msg_chatid, "ur rating is $rating");
 
         } else if ($msg == '/feedback') {
 
@@ -254,7 +258,8 @@ $text =
 "Order
 *".$line['name']."*
 ".$line['description']."
-Price: ".$line['price']."$file";
+Price: ".$line['price']."
+Customer rating: ".round($user['rating'], 1)."$file";
                     $data_to_send = new stdClass;
                         $data_to_send->chat_id = $msg_chatid;
                         $data_to_send->text = $text;

@@ -135,6 +135,7 @@ function get_order($order_id) {
 }
 function delete_order($order_id) {
     $order = get_order($order_id);
+    $customer = get_user($order['customer_id']);
     
 
     $file = "";
@@ -147,6 +148,7 @@ function delete_order($order_id) {
 *".$order['name']."*
 ".$order['description']."
 Price: ".$order['price']."$file
+Customer rating: ".round($customer['rating'], 1)."
 Done.";
     $data_to_send->parse_mode = 'markdown';
     $data_to_send->disable_web_page_preview = false;
@@ -235,6 +237,7 @@ function publish_order($order_id) {
     pg_free_result($result);
     pg_close($dbconn);
 
+    $customer = get_user($line['cuscomer_id']);
     // return $line;
 
 
@@ -245,7 +248,8 @@ function publish_order($order_id) {
 "Order
 *".$line['name']."*
 ".$line['description']."
-Price: ".$line['price']."$file";
+Price: ".$line['price']."
+Customer rating: ".round($user['rating'], 1)."$file";
 
     $data_to_send = new stdClass;
     $data_to_send->chat_id = -1001271762698;
