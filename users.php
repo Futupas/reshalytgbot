@@ -143,12 +143,11 @@ function delete_order($order_id) {
     $data_to_send->chat_id = -1001271762698;
     $data_to_send->message_id = $order['post_id'];
     $data_to_send->text =
-"Заказ
+"🟢Выполнен
 *".$order['name']."*
 ".$order['description']."
 Цена: ".$order['price']."
-Рейтинг заказчика: ".round($customer['rating'], 1)."/5$file
-Выполнен.";
+Рейтинг заказчика: ".round($customer['rating'], 1)."/5$file";
     $data_to_send->parse_mode = 'markdown';
     $data_to_send->disable_web_page_preview = false;
     $data_to_send->reply_markup = '';
@@ -243,7 +242,7 @@ function publish_order($order_id) {
     if ($line['file_id'] != null) $file = "[.](https://t.me/reshalymedia/".$line['file_id'].")";
 
     $text = 
-"Заказ
+"🔵Активно
 *".$line['name']."*
 ".$line['description']."
 Цена: ".$line['price']."

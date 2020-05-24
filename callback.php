@@ -36,12 +36,11 @@ function handle_callback($json_message) {
                 $data_to_send->chat_id = -1001271762698;
                 $data_to_send->message_id = $order['post_id'];
                 $data_to_send->text =
-"Заказ
+"🟡Выполняется
 *".$order['name']."*
 ".$order['description']."
 Цена: ".$order['price']."$file
-Рейтинг заказчика: ".round($user['rating'], 1)."/5
-В процессе.";
+Рейтинг заказчика: ".round($user['rating'], 1)."/5";
                 $data_to_send->parse_mode = 'markdown';
                 $data_to_send->disable_web_page_preview = false;
                 $data_to_send->reply_markup = '';

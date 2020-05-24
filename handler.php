@@ -249,7 +249,7 @@ function handle($json_message) {
                     if ($line['file_id'] != null) $file = "[.](https://t.me/reshalymedia/".$line['file_id'].")";
 
 $text = 
-"Заказ
+"🔵Активно
 *".$line['name']."*
 ".$line['description']."
 Цена: ".$line['price']."
