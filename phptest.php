@@ -1,5 +1,12 @@
 <?php
-$msg = '/price 26';
-$price = substr($msg, strlen('/price '), strlen($msg)-strlen('/price '));
-echo $price;
+$t = 't';
+echo is_numeric('t');
+echo 't' == $t;
+echo 't' === $t;
+echo is_numeric('-123');
+echo is_numeric(123);
+$p;
+$p = 9;
+
+
 ?>
