@@ -18,7 +18,7 @@ port=5432")
     or die('Не удалось соединиться: ' . pg_last_error());
 
 // Выполнение SQL-запроса
-$query = 'ALTER TABLE chat_messages ADD COLUMN message_text varchar(1024) null default null';
+$query = 'UPDATE users SET rating=((rating*rating_votes_quantity+0)/(rating_votes_quantity+1)), rating_votes_quantity=rating_votes_quantity+1 WHERE id=649365656';
 $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
 
 // Вывод результатов в HTML

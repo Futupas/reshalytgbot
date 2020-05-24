@@ -61,6 +61,27 @@
             $response = file_get_contents(
                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/editMessageText?'.http_build_query($data_to_send, '', '&')
             );
+
+            // rating
+            set_user_current_order_fill($order['customer_id'], $order['executor_id']);
+            set_user_step($order['customer_id'], 9);
+            $data_to_send = new stdClass;
+            $data_to_send->chat_id = $order['customer_id'];
+            $data_to_send->text = "please, rate ur executor (5 is the best, 1 is the worst)";
+            $data_to_send->reply_markup = '{"keyboard"=[["1", "2", "3", "4", "5"]]}';
+            $response = json_decode(file_get_contents(
+                'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
+            ));
+            set_user_current_order_fill($order['executor_id'], $order['customer_id']);
+            set_user_step($order['executor_id'], 9);
+            $data_to_send = new stdClass;
+            $data_to_send->chat_id = $order['executor_id'];
+            $data_to_send->text = "please, rate ur customer (5 is the best, 1 is the worst)";
+            $data_to_send->reply_markup = '{"keyboard"=[["1", "2", "3", "4", "5"]]}';
+            $response = json_decode(file_get_contents(
+                'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
+            ));
+                            
         }
 
         

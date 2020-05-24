@@ -7,3 +7,4 @@
 6 - setting user's univ
 7 - adding a file
 8 - giving feedback
+9 - rating

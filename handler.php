@@ -279,6 +279,23 @@ Price: ".$line['price']."$file";
                     SendMessageWithMarkdown($msg_chatid, "kkey, thanks u 4 ur feedback");
                     set_user_step($msg_chatid, 0);
                 break;
+                case 9: 
+                    if ($msg == '1' || $msg == '2' || $msg == '3' || $msg == '4' || $msg == '5') {
+                        $data_to_send = new stdClass;
+                        $data_to_send->chat_id = $msg_chatid;
+                        $data_to_send->text = 'kkey, thanks 4 ur vote';
+                        $data_to_send->reply_markup = '';
+                        $response = file_get_contents(
+                            'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
+                        );
+                        change_user_rating($user['current_order_fill'], $msg);
+                        set_user_current_order_fill($msg_chatid, 'NULL');
+                        set_user_step($msg_chatid, 0);
+                    } else {
+                        SendMessage($msg_chatid, "kkey, u havent voted.");
+                        set_user_step($msg_chatid, 0);
+                    }
+                break;
                     default:
                 SendMessage($msg_chatid, 'send me a command');
                     break;

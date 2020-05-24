@@ -22,3 +22,6 @@ LINE 1: ... table orders alter column price type varchar(32) null defau...
 [07-May-2020 21:28:33 UTC] PHP Warning:  pg_query(): Query failed: ERROR:  column &quot;customer_done&quot; of relation &quot;orders&quot; already exists in C:\PROJECTS\ReshalyBot\postgretest.php on line 22
 [19-May-2020 18:24:15 UTC] PHP Notice:  Undefined variable: msg in C:\PROJECTS\ReshalyBot\phptest.php on line 3
 [19-May-2020 18:24:15 UTC] PHP Notice:  Undefined variable: msg in C:\PROJECTS\ReshalyBot\phptest.php on line 3
+[24-May-2020 13:37:48 UTC] PHP Warning:  pg_query(): Query failed: ERROR:  syntax error at or near &quot;real&quot;
+LINE 1: ALTER TABLE users ALTER COLUMN rating real not null default ...
+                                              ^ in C:\PROJECTS\ReshalyBot\postgretest.php on line 25

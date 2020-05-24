@@ -29,12 +29,23 @@ function add_user_to_db($user_id) {
     $dbconn = pg_connect($GLOBALS['connection_string'])
     or die('Не удалось соединиться: ' . pg_last_error());
 
-    $query = 'INSERT INTO "users" ("id", "step", "rating", "current_order_fill") VALUES ('.$user_id.', 0, 0, null)';
+    $query = 'INSERT INTO "users" ("id", "step", "current_order_fill") VALUES ('.$user_id.', 0, null)';
     $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
 
     pg_free_result($result);
     pg_close($dbconn);
 }
+function change_user_rating($user_id, $rating) {
+    $dbconn = pg_connect($GLOBALS['connection_string'])
+    or die('Не удалось соединиться: ' . pg_last_error());
+
+    $query = "UPDATE users SET rating=((rating*rating_votes_quantity+$rating)/(rating_votes_quantity+1)), rating_votes_quantity=rating_votes_quantity+1 WHERE id=$user_id";
+    $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+    pg_free_result($result);
+    pg_close($dbconn);
+}
+//UPDATE users SET rating=((rating*rating_votes_quantity+0)/(rating_votes_quantity+1)), rating_votes_quantity=rating_votes_quantity+1 WHERE id=649365656
 
 function create_order($customer_id) {
     $dbconn = pg_connect($GLOBALS['connection_string'])
