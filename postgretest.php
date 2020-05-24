@@ -18,7 +18,7 @@ port=5432")
     or die('Не удалось соединиться: ' . pg_last_error());
 
 // Выполнение SQL-запроса
-$query = 'UPDATE users SET rating=((rating*rating_votes_quantity+0)/(rating_votes_quantity+1)), rating_votes_quantity=rating_votes_quantity+1 WHERE id=649365656';
+$query = 'UPDATE orders SET executor_price=NULL, customer_price=NULL WHERE id=100';
 $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
 
 // Вывод результатов в HTML
