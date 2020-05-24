@@ -147,8 +147,8 @@ function delete_order($order_id) {
 "Order
 *".$order['name']."*
 ".$order['description']."
-Price: ".$order['price']."$file
-Customer rating: ".round($customer['rating'], 1)."
+Price: ".$order['price']."
+Customer rating: ".round($customer['rating'], 1)."/5$file
 Done.";
     $data_to_send->parse_mode = 'markdown';
     $data_to_send->disable_web_page_preview = false;
@@ -249,7 +249,7 @@ function publish_order($order_id) {
 *".$line['name']."*
 ".$line['description']."
 Price: ".$line['price']."
-Customer rating: ".round($user['rating'], 1)."$file";
+Customer rating: ".round($user['rating'], 1)."/5$file";
 
     $data_to_send = new stdClass;
     $data_to_send->chat_id = -1001271762698;

@@ -41,7 +41,7 @@ function handle_callback($json_message) {
 *".$order['name']."*
 ".$order['description']."
 Price: ".$order['price']."$file
-Customer rating: ".round($user['rating'], 1)."
+Customer rating: ".round($user['rating'], 1)."/5
 In process.";
                 $data_to_send->parse_mode = 'markdown';
                 $data_to_send->disable_web_page_preview = false;
