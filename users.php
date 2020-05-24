@@ -236,7 +236,7 @@ function publish_order($order_id) {
     pg_free_result($result);
     pg_close($dbconn);
 
-    $customer = get_user($line['cuscomer_id']);
+    $customer = get_user($line['customer_id']);
 
 
     $file = "";

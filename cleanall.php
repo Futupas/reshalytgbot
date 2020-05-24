@@ -14,7 +14,7 @@
     };
 
 
-    // clean_table('users'); echo("users were cleaned\n");
+    clean_table('users'); echo("users were cleaned\n");
     clean_table('orders'); echo("orders were cleaned\n");
     clean_table('chat_messages'); echo("chat_messages were cleaned\n");
     clean_table('order_executors'); echo("order_executors were cleaned\n");

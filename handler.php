@@ -123,7 +123,7 @@ function handle($json_message) {
         } else {
             $user = get_user($msg_chatid);
             $step = $user['step'];
-            $msg_len = strlen($msg);
+            $msg_len = strlen($msg) / 2;
             switch ($step) {
                 case 1:
                     if ($msg_len < 1 || $msg_len > 32) {
@@ -137,13 +137,13 @@ function handle($json_message) {
                     break;
                 case 2:
                     $order_id = $user['current_order_fill'];
-                    change_order($order_id, 'description', "'$msg'");
-                    set_user_step($msg_chatid, 3);
-                    SendMessage($msg_chatid, 'введи цену заказа указывая валюту. (минимальная цена - 30 грн. также можешь указать что цена договорная');
                     if ($msg_len < 1 || $msg_len > 256) {
                         SendMessage($msg_chatid, 'описание должно быть не меньше 10 символов и не больше 256 символов. попробуй ещё раз');
                         exit(0);
                     }
+                    change_order($order_id, 'description', "'$msg'");
+                    set_user_step($msg_chatid, 3);
+                    SendMessage($msg_chatid, 'введи цену заказа указывая валюту. (минимальная цена - 30 грн). также можешь указать что цена договорная');
                     break;
                 case 3:
                     if ($msg_len < 1 || $msg_len > 16) {
