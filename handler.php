@@ -284,7 +284,9 @@ Price: ".$line['price']."$file";
                         $data_to_send = new stdClass;
                         $data_to_send->chat_id = $msg_chatid;
                         $data_to_send->text = 'kkey, thanks 4 ur vote';
-                        $data_to_send->reply_markup = '';
+                        $data_to_send->reply_markup = json_encode((object)(array(
+                            'remove_keyboard' => true
+                        )));
                         $response = file_get_contents(
                             'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
                         );
