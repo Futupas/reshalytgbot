@@ -277,7 +277,7 @@
                             // SendMessageWithMarkdown(getenv('admin_chat'), 'admin, send ');
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = getenv('admin_chat');
-                            $data_to_send->text = 'admins, send pls '.$order['customer_price'].' uah to card ```'.$cardnum.'```.';
+                            $data_to_send->text = 'admins, send pls '.$order['customer_price'].' uah to card '.$cardnum.'.';
                             $data_to_send->parse_mode = 'markdown';
                             $data_to_send->disable_web_page_preview = true;
                             $data_to_send->reply_markup = json_encode((object)(array(
@@ -301,7 +301,7 @@
                             $order = get_order($chat_message['order_id']);
                             $text = "*".$user['name']."*:\n$msg";
                             $response = SendMessageWithMarkdownToChatBot($chat_message['destination_chat_id'], $text, $order);
-                            // add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], $msg);
+                            add_row_to_chat_messages_table_with_text($msg_chatid, $json_message->message->message_id, $chat_message['destination_chat_id'], $chat_message['order_id'], $msg);
                             exit(0);
                         }
                         if (property_exists($json_message->message, 'voice')) {
