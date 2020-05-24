@@ -316,7 +316,7 @@
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = $chat_message['destination_chat_id'];
                             $data_to_send->voice = $json_message->message->voice->file_id;
-                            $data_to_send->caption = '(from '.$user['name'].')';
+                            $data_to_send->caption = '(от '.$user['name'].')';
                             $response = json_decode(file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendVoice?'.http_build_query($data_to_send, '', '&')
                             ));
@@ -329,7 +329,7 @@
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = $chat_message['destination_chat_id'];
                             $data_to_send->document = $json_message->message->document->file_id;
-                            $data_to_send->caption = '(from '.$user['name'].')';
+                            $data_to_send->caption = '(от '.$user['name'].')';
                             $response = json_decode(file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendDocument?'.http_build_query($data_to_send, '', '&')
                             ));
@@ -338,7 +338,7 @@
                             exit(0);
                         }
                         $order = get_order($chat_message['order_id']);
-                        $response = SendMessageToChatBot($msg_chatid, 'incorrect type of media', $order);
+                        $response = SendMessageToChatBot($msg_chatid, 'ты можешь отправить только текст, файл или голосовое сообщение', $order);
                         exit(0);
                     }
                 } else {

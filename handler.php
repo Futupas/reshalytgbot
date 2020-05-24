@@ -80,7 +80,7 @@ function handle($json_message) {
                 //set user current order fill
                 set_user_current_order_fill($msg_chatid, $order_id);
                 //send message
-                SendMessage($msg_chatid, 'напишите название предмета или задания');
+                SendMessage($msg_chatid, 'напиши название предмета или задания');
 
         } else if ($msg == '/my_orders') {
             $my_orders_as_executor = get_orders_as_executor($user['id']);
