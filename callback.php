@@ -17,7 +17,7 @@ function handle_callback($json_message) {
             file_get_contents('https://api.telegram.org/bot'.getenv('bot_token').'/answerCallbackQuery?'.
             http_build_query((object)array(
                 'callback_query_id' => $callback_query_id,
-                'text' => 'kkey'
+                'text' => 'океу'
             )));
             change_order($order_id, 'executor_id', $executor_id);
             delete_executors_from_table($order_id);
@@ -25,8 +25,8 @@ function handle_callback($json_message) {
             $user_executor = get_user($executor_id);
             $user_customer = get_user($order['customer_id']);
 
-            SendMessageWithMarkdown($customer_id, "[Press this link](https://t.me/reshalychatbot?start=".$order['id'].") to chat with executor of order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].") (his name is ".$user_executor['name'].")");
-            SendMessageWithMarkdown($executor_id, "[Press this link](https://t.me/reshalychatbot?start=".$order['id'].") to chat with customer of order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].") (his name is ".$user_customer['name'].")");
+            SendMessageWithMarkdown($customer_id, "[Нажми эту ссылку](https://t.me/reshalychatbot?start=".$order['id'].") для общения с исполнителем заказа [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].") (его зовут ".$user_executor['name'].")");
+            SendMessageWithMarkdown($executor_id, "[Нажми эту ссылку](https://t.me/reshalychatbot?start=".$order['id'].") для общения с заказчиком заказа [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].") (его зовут ".$user_customer['name'].")");
 
 
             $file = "";
@@ -36,12 +36,12 @@ function handle_callback($json_message) {
                 $data_to_send->chat_id = -1001271762698;
                 $data_to_send->message_id = $order['post_id'];
                 $data_to_send->text =
-"Order
+"Заказ
 *".$order['name']."*
 ".$order['description']."
-Price: ".$order['price']."$file
-Customer rating: ".round($user['rating'], 1)."/5
-In process.";
+Цена: ".$order['price']."$file
+Рейтинг заказчика: ".round($user['rating'], 1)."/5
+В процессе.";
                 $data_to_send->parse_mode = 'markdown';
                 $data_to_send->disable_web_page_preview = false;
                 $data_to_send->reply_markup = '';
@@ -54,7 +54,7 @@ In process.";
             file_get_contents('https://api.telegram.org/bot'.getenv('bot_token').'/answerCallbackQuery?'.
             http_build_query((object)array(
                 'callback_query_id' => $callback_query_id,
-                'text' => 'u cant accept one order twice'
+                'text' => 'нельзя разрешить один заказ дважды'
             )));
         }
     }

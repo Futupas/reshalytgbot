@@ -19,8 +19,8 @@
             $response = (object)json_decode(file_get_contents(
                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/answerPreCheckoutQuery?'.http_build_query($data_to_send, '', '&')
             ));
-            $response = SendMessageToChatBot('e', 'u can now do this order ('.$order['name'].') because customer had paid for it', $order);
-            $response = SendMessageToChatBot('c', 'executor of order '.$order['name'].' got a msg that he can now do this order', $order);
+            $response = SendMessageToChatBot('e', 'ты можешь приступить к выполнению заказа ('.$order['name'].') ибо заказчик уже заплатил за него', $order);
+            $response = SendMessageToChatBot('c', 'исполнитель заказа '.$order['name'].' получил сообщение, что может приступать к работе', $order);
             exit(0);
         }
         if (property_exists($json_message, 'message') && property_exists($json_message->message, 'successful_payment')) {
@@ -36,19 +36,19 @@
             file_get_contents('https://api.telegram.org/bot'.getenv('chat_bot_token').'/answerCallbackQuery?'.
             http_build_query((object)array(
                 'callback_query_id' => $callback_query_id,
-                'text' => 'kkey'
+                'text' => 'океу'
             )));
 
             $order_id = $choise_data;
             $order = get_order($order_id);
 
-            $response = SendMessageToChatBot('e', 'ok, u received lv', $order);
+            $response = SendMessageToChatBot('e', 'деньги перевели', $order);
             delete_order($order_id);
 
             $data_to_send = new stdClass;
             $data_to_send->chat_id = getenv('admin_chat');
             $data_to_send->message_id = $msg_id;
-            $data_to_send->text = "order ".$order['name']." was succ fully closed";
+            $data_to_send->text = "заказ ".$order['name']." был полностью закрыт";
             $data_to_send->parse_mode = 'markdown';
             $data_to_send->disable_web_page_preview = false;
             $data_to_send->reply_markup = '';
@@ -61,7 +61,7 @@
             set_user_step($order['customer_id'], 9);
             $data_to_send = new stdClass;
             $data_to_send->chat_id = $order['customer_id'];
-            $data_to_send->text = "please, rate ur executor (5 is the best, 1 is the worst)";
+            $data_to_send->text = "оцени, пожалуйста твоего исполнителя заказа (1 - очень плохо, 5 - очень хорошо)";
             $data_to_send->reply_markup = json_encode((object)(array(
                 'keyboard' => array(array("1", "2", "3", "4", "5"))
             )));
@@ -72,7 +72,7 @@
             set_user_step($order['executor_id'], 9);
             $data_to_send = new stdClass;
             $data_to_send->chat_id = $order['executor_id'];
-            $data_to_send->text = "please, rate ur customer (5 is the best, 1 is the worst)";
+            $data_to_send->text = "оцени, пожалуйста твоего заказчика (1 - очень плохо, 5 - очень хорошо)";
             $data_to_send->reply_markup = json_encode((object)(array(
                 'keyboard' => array(array("1", "2", "3", "4", "5"))
             )));
@@ -93,37 +93,46 @@
         $msg_id = $json_message->message->message_id;
         
         if ($sender_is_bot) {
-            SendMessageToChatBotWithNoOrder($msg_chatid, 'bots are not allowed.');
+            SendMessageToChatBotWithNoOrder($msg_chatid, 'боты запрещены.');
         } else {
             //check for user
             $user = get_user($msg_chatid);
             if ($user === false) {
-                SendMessageToChatBotWithNoOrder($msg_chatid, 'u are not registered. go to @reshalybot to do it');
+                SendMessageToChatBotWithNoOrder($msg_chatid, 'ты не заристрирован. напиши @reshalybot что б сделать это');
                 exit(0);
             } else if ($user['name'] == null && $user['step'] != 5 && $user['step'] != 6) {
-                SendMessageToChatBotWithNoOrder($msg_chatid, 'u are not registered. go to @reshalybot to do it');
+                SendMessageToChatBotWithNoOrder($msg_chatid, 'ты не заристрирован. напиши @reshalybot что б сделать это');
                 exit(0);
             } else if ($user['univ'] == null && $user['step'] != 5 && $user['step'] != 6) {
-                SendMessageToChatBotWithNoOrder($msg_chatid, 'u are not registered. go to @reshalybot to do it');
+                SendMessageToChatBotWithNoOrder($msg_chatid, 'ты не заристрирован. напиши @reshalybot что б сделать это');
                 exit(0);
             }
 
             if ($msg == '/start') {
-                SendMessageToChatBotWithNoOrder($msg_chatid, 'kkey, but u have to go to @reshalybot to do it');
+                SendMessageToChatBotWithNoOrder($msg_chatid, 'хорошо, но сначала напиши @reshalybot что б сделать это');
             } else if (strpos($msg, '/start') === 0) {
                 $choise_data = explode(" ", $msg)[1]; // id of order he's taking
                 $user_id = $msg_chatid;
 
                 $order = get_order($choise_data);
+                $executor_name = get_user($order['executor_id'])['name'];
+                $customer_name = get_user($order['customer_id'])['name'];
 
                 if ($order === false) {
-                    SendMessageToChatBotWithNoOrder($msg_chatid, 'u can not use this bot with no order');
+                    SendMessageToChatBotWithNoOrder($msg_chatid, 'нельзя использовать этот бот, не имея заказов');
                     exit(0);
                 }
 
 
                 if ($user_id == $order['customer_id']) {
-                    $text = "ккеу, сбщ, которые ты отправишь мне, отвечая на это сбщ, я отправлю исполнителю заказа \"".$order['name']."\". И все сбщ, которые ты отправишь, отвечая на его сбщ, так же отправятся ему. ответь сообщением /done что б завершить заказ со своей стороны. когда заказ буит закрыт с двух сторон, исполнитель получить лв, а статус заказа перейдёт в выполненный";
+                    // $text = "ккеу, сбщ, которые ты отправишь мне, отвечая на это сбщ, я отправлю исполнителю заказа \"".$order['name']."\". И все сбщ, которые ты отправишь, отвечая на его сбщ, так же отправятся ему. ответь сообщением /done что б завершить заказ со своей стороны. когда заказ буит закрыт с двух сторон, исполнитель получить лв, а статус заказа перейдёт в выполненный";
+                    $text = "ты в анонимном чате с $executor_name по заказу “".$order['name']."”. 
+- Для общения  каждый раз отправляйте текст отвечая (СВАЙП влево) на сообщение вашего собеседника (ИЛИ НА ЭТО СООБЩЕНИЕ).
+- Когда цена согласована, ответьте на это сообщение /price и введите сумму (Например /price 100) и после подтверждения цены собеседником следуйте дальнейшим указаниям. 
+- После успешного выполнения задания, ответьте на это сообщение (/done) и сделка будет закрыта, после чего деньги будут перечислены исполнителю. 
+ВАЖНО! Для отправки сообщений используйте функцию “Ответить” (Свайп влево).
+Полная инструкция: *тыц*
+";
                     $data_to_send = new stdClass;
                     $data_to_send->chat_id = $order['customer_id'];
                     $data_to_send->text = $text;
@@ -134,8 +143,14 @@
                     ));
                     add_row_to_chat_messages_table($user_id, $response->result->message_id, $order['executor_id'], $choise_data);
                 } else if ($user_id == $order['executor_id']) {
-                    $text = "ккеу, сбщ, которые ты отправишь мне, отвечая на это сбщ, я отправлю заказчику заказа \"".$order['name']."\". И все сбщ, которые ты отправишь, отвечая на его сбщ, так же отправятся ему. ответь сообщением /done что б завершить заказ со своей стороны. когда заказ буит закрыт с двух сторон, исполнитель получить лв, а статус заказа перейдёт в выполненный";
-                    $data_to_send = new stdClass;
+                    // $text = "ккеу, сбщ, которые ты отправишь мне, отвечая на это сбщ, я отправлю заказчику заказа \"".$order['name']."\". И все сбщ, которые ты отправишь, отвечая на его сбщ, так же отправятся ему. ответь сообщением /done что б завершить заказ со своей стороны. когда заказ буит закрыт с двух сторон, исполнитель получить лв, а статус заказа перейдёт в выполненный";
+                    $text = "ты в анонимном чате с $customer_name по заказу “".$order['name']."”. 
+- Для общения  каждый раз отправляйте текст отвечая (СВАЙП влево) на сообщение вашего собеседника (ИЛИ НА ЭТО СООБЩЕНИЕ).
+- Когда цена согласована, ответьте на это сообщение /price и введите сумму (Например /price 100) и после подтверждения цены собеседником следуйте дальнейшим указаниям. 
+- После успешного выполнения задания, ответьте на это сообщение (/done) и сделка будет закрыта, после чего деньги будут перечислены исполнителю. 
+ВАЖНО! Для отправки сообщений используйте функцию “Ответить” (Свайп влево).
+Полная инструкция: *тыц*
+";                    $data_to_send = new stdClass;
                     $data_to_send->chat_id = $order['executor_id'];
                     $data_to_send->text = $text;
                     $data_to_send->parse_mode = 'markdown';
@@ -145,7 +160,7 @@
                     ));
                     add_row_to_chat_messages_table($user_id, $response->result->message_id, $order['customer_id'], $choise_data);
                 } else {
-                    SendMessageToChatBotWithNoOrder($msg_chatid, 'u can not use this bot with no order');
+                    SendMessageToChatBotWithNoOrder($msg_chatid, 'нельзя использовать этот бот без заказа');
                     exit(0);
                 }
 
@@ -154,55 +169,55 @@
                 if (property_exists($json_message->message, 'reply_to_message')) {
                     $reply_to_message_id = $json_message->message->reply_to_message->message_id;
                     $chat_message = get_row_from_chat_messages_table($msg_chatid, $reply_to_message_id);
-                    $order = get_order($chat_message['order_id']);
                     if ($chat_message === false) {
-                        SendMessageToChatBotWithNoOrder($msg_chatid, 'u replied on a wrong message');
+                        SendMessageToChatBotWithNoOrder($msg_chatid, 'ты ответил на сообщение, не имеющее отношения к какому-либо заказу');
                         exit(0);
                     }
+                    $order = get_order($chat_message['order_id']);
 
                     if ($msg == '/done') {
                         if ($msg_chatid == $order['customer_id']) {
                             change_order($order['id'], 'customer_done', 'true');
                             if ($order['executor_done'] === 't') {
-                                $response = SendMessageToChatBot('c', 'kkey, order was stopped', $order);
-                                $response = SendMessageToChatBot('e', 'order was deleted. send me msg in format /card 4242424242424242 to get ur money', $order);
+                                $response = SendMessageToChatBot('c', 'заказ закрыт', $order);
+                                $response = SendMessageToChatBot('e', 'заказ закрыт. пришли мне сообщение в формате /card 4242424242424242 что б получить свои деньги', $order);
                             } else {
-                                $response = SendMessageToChatBot('c', 'kkey, wait until executor will stop order to', $order);
-                                $response = SendMessageToChatBot('e', 'customer proposed to stop the order. answer /done to confirm it', $order);
+                                $response = SendMessageToChatBot('c', 'ждём, пока исполнитель тоже не закроет заказ', $order);
+                                $response = SendMessageToChatBot('e', 'заказчик предложил закрыть заказ. пришли мне /done что б подтвердить это', $order);
                             }
                             exit(0);
                         } else if ($msg_chatid == $order['executor_id']) {
                             change_order($order['id'], 'executor_done', 'true');
                             if ($order['customer_done'] === 't') {
-                                $response = SendMessageToChatBot('e', 'kkey, order was deleted. send me msg in format /card 4242424242424242 to get ur money', $order);
+                                $response = SendMessageToChatBot('e', 'заказ закрыт. пришли мне сообщение в формате /card 4242424242424242 что б получить свои деньги', $order);
 
-                                $response = SendMessageToChatBot('c', 'order was stopped', $order);
+                                $response = SendMessageToChatBot('c', 'заказ закрыт', $order);
                             } else {
-                                $response = SendMessageToChatBot('e', 'kkey, wait until customer will stop order to', $order);
+                                $response = SendMessageToChatBot('e', 'ждём, пока заказчик тоже не закроет заказ', $order);
 
-                                $response = SendMessageToChatBot('c', 'executor proposed to stop the order. answer /done to confirm it', $order);
+                                $response = SendMessageToChatBot('c', 'исполнитель предложил закрыть заказ. пришли мне /done что б подтвердить это', $order);
                             }
                             exit(0);
                         } else {
-                            SendMessageToChatBotWithNoOrder($msg_chatid, 'u can not use this bot with no order');
+                            SendMessageToChatBotWithNoOrder($msg_chatid, 'нельзя использовать этого бота без заказа');
                             exit(0);
                         }
                     } else if (strpos($msg, '/price ') === 0) {
                         $price = substr($msg, strlen('/price '), strlen($msg)-strlen('/price '));
                         $order = get_order($chat_message['order_id']);
                         if (!is_numeric($price) || strpos($price, "," !== false) || strpos($price, "." !== false) || strpos($price, "-" !== false)) {
-                            $response = SendMessageToChatBot($msg_chatid, 'ur price is fucking bad, send me a fucking positive integer', $order);
+                            $response = SendMessageToChatBot($msg_chatid, 'цена должна быть положительным целым числом', $order);
                             exit(0);
                         }
                         if ($order['customer_price'] !== null && $order['customer_price'] === $order['executor_price']) {
-                            $response = SendMessageToChatBot($msg_chatid, 'u cant change the price now', $order);
+                            $response = SendMessageToChatBot($msg_chatid, 'уже нельзя изменить цену', $order);
                             exit(0);
                         }
                         if ($msg_chatid == $order['customer_id']) {
                             change_order($order['id'], 'customer_price', $price);
                             if ($order['executor_price'] !== null) {
                                 if ($order['executor_price'] != $price) {
-                                    $response = SendMessageToChatBot($msg_chatid, 'offered prices must be equal', $order);
+                                    $response = SendMessageToChatBot($msg_chatid, 'предложенные цены должны быть одинаковыми', $order);
                                     exit(0);
                                 }
                                 $data_to_send = new stdClass;
@@ -218,17 +233,17 @@
                                     'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendInvoice?'.http_build_query($data_to_send, '', '&')
                                 ));
                                 add_row_to_chat_messages_table($msg_chatid, $response->result->message_id, ($msg_chatid == $order['customer_id'] ? $order['executor_id'] : $order['customer_id']), $order['id']);
-                                $response = SendMessageToChatBot('e', 'kkey, price was confirmed, wait 4 a msg', $order);
+                                $response = SendMessageToChatBot('e', 'цена была подтверждена, жди сообщения', $order);
                             } else {
-                                $response = SendMessageToChatBot('c', 'kkey, ur price was set, wait until executor will accept ur price', $order);
-                                $response = SendMessageToChatBot('e', 'customer offered price '.$price.' uah', $order);
+                                $response = SendMessageToChatBot('c', 'твоя цена была установлена, ждём, когда исполнитель её подтвердит', $order);
+                                $response = SendMessageToChatBot('e', 'заказчик предложил цену '.$price.' грн', $order);
                             }
                             exit(0);
                         } else if ($msg_chatid == $order['executor_id']) {
                             change_order($order['id'], 'executor_price', $price);
                             if ($order['customer_price'] !== null) {
                                 if ($order['customer_price'] != $price) {
-                                    $response = SendMessageToChatBot('e', 'offered prices must be equal', $order);
+                                    $response = SendMessageToChatBot('e', 'предложенные цены должны быть одинаковыми', $order);
                                     exit(0);
                                 }
                                 $data_to_send = new stdClass;
@@ -244,14 +259,14 @@
                                     'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendInvoice?'.http_build_query($data_to_send, '', '&')
                                 ));
                                 add_row_to_chat_messages_table($order['customer_id'], $response->result->message_id, $order['executor_id'], $order['id']);
-                                $response = SendMessageToChatBot('e', 'kkey, price was confirmed, wait 4 a msg', $order);
+                                $response = SendMessageToChatBot('e', 'цена была подтверждена, жди сообщения', $order);
                             } else {
-                                $response = SendMessageToChatBot('e', 'kkey, ur price was set, wait until customer will accept ur price', $order);
-                                $response = SendMessageToChatBot('c', 'executor offered price '.$price.' uah', $order);
+                                $response = SendMessageToChatBot('e', 'твоя цена была установлена, ждём, когда заказчик её подтвердит', $order);
+                                $response = SendMessageToChatBot('c', 'исполнитель предложил цену '.$price.' грн', $order);
                             }
                             exit(0);
                         } else {
-                            SendMessageToChatBotWithNoOrder($msg_chatid, 'u can not use this bot with no order');
+                            SendMessageToChatBotWithNoOrder($msg_chatid, 'нельзя использовать этого бота без заказа');
                             exit(0);
                         }
                     } else if (strpos($msg, '/card ') === 0) {
@@ -260,32 +275,32 @@
                         $order = get_order($chat_message['order_id']);
                         
                         if ($order['customer_done'] !== 't' || $order['executor_done'] !== 't') {
-                            $response = SendMessageToChatBot($msg_chatid, 'do the order first', $order);
+                            $response = SendMessageToChatBot($msg_chatid, 'сначала выполни заказ', $order);
                             exit(0);
                         }
 
                         if ($msg_chatid == $order['customer_id']) {
-                            $response = SendMessageToChatBot('c', 'u motherfucker are not an executor', $order);
+                            $response = SendMessageToChatBot('c', 'ты не исполнитель, что б это делать', $order);
                             exit(0);
                         } else if ($msg_chatid == $order['executor_id']) {
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = getenv('admin_chat');
-                            $data_to_send->text = 'admins, send pls '.$order['customer_price'].' uah to card '.$cardnum.'.';
+                            $data_to_send->text = 'админы, пришлите '.$order['customer_price'].' грн на карту '.$cardnum.'.';
                             $data_to_send->parse_mode = 'markdown';
                             $data_to_send->disable_web_page_preview = true;
                             $data_to_send->reply_markup = json_encode((object)(array(
                                 'inline_keyboard' => array(array((object)(array(
-                                    'text' => 'paid',
+                                    'text' => 'прислали',
                                     'callback_data' => $order['id']
                                 ))))
                             )));
                             $response = file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
                             );
-                            $response = SendMessageToChatBot('e', 'kkey, wait 4 a msg that lv came to u', $order);
+                            $response = SendMessageToChatBot('e', 'жди сообщения, что тебе отправили деньги', $order);
                             exit(0);
                         } else {
-                            SendMessageToChatBotWithNoOrder($msg_chatid, 'u can not use this bot with no order');
+                            SendMessageToChatBotWithNoOrder($msg_chatid, 'нельзя использовать этого бота без заказа');
                             exit(0);
                         }
                     } else {
@@ -327,12 +342,12 @@
                         exit(0);
                     }
                 } else {
-                    SendMessageToChatBotWithNoOrder($msg_chatid, 'u can not send me msg that is not a reply');
+                    SendMessageToChatBotWithNoOrder($msg_chatid, 'сообщение не доставлено, пожалуйста ответь на сообщение собеседника');
                     exit(0);
                 }
             }
         }
     } else {
-        echo('Prozhektor Perestroyki');
+        echo('Прожектор Перестройки');
     }
 ?>

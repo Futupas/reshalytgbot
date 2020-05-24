@@ -16,47 +16,47 @@ function handle($json_message) {
     $msg_id = $json_message->message->message_id;
     
     if ($sender_is_bot) {
-        SendMessage($msg_chatid, 'bots are not allowed.');
+        SendMessage($msg_chatid, 'боты запрещены.');
     } else {
         //check for user 
         $user = get_user($msg_chatid);
         if ($user === false) {
-            SendMessage($msg_chatid, 'u are not registered. send me your name');
+            SendMessage($msg_chatid, 'ты не зарегистрирован. пришли мне своё имя');
             add_user_to_db($msg_chatid);
             set_user_step($msg_chatid, 5);
             exit(0);
         } else if ($user['name'] == null && $user['step'] != 5 && $user['step'] != 6) {
-            SendMessage($msg_chatid, 'u are not registered. send me your name');
+            SendMessage($msg_chatid, 'ты не зарегистрирован. пришли мне своё имя');
             add_user_to_db($msg_chatid);
             set_user_step($msg_chatid, 5);
             exit(0);
         } else if ($user['univ'] == null && $user['step'] != 5 && $user['step'] != 6) {
-            SendMessage($msg_chatid, 'u are not registered. send me your university');
+            SendMessage($msg_chatid, 'ты не зарегистрирован. пришли мне свой универ и специальность');
             add_user_to_db($msg_chatid);
             set_user_step($msg_chatid, 6);
             exit(0);
         }
 
         if ($msg == '/start') {
-            SendMessage($msg_chatid, 'u have already started');
+            SendMessage($msg_chatid, 'ты уже начал');
         } else if (strpos($msg, '/start') === 0) {
             $choise_data = explode(" ", $msg)[1]; // id of order he's taking
             $user_id = $msg_chatid;
 
             if (is_executor_in_table($choise_data, $msg_chatid)) {
-                SendMessage($msg_chatid, 'u can not press "i can do it" button more than once');
+                SendMessage($msg_chatid, 'нельзя дважды взяться за один заказ');
                 exit(0);
             }
 
             add_executor_in_table($choise_data, $msg_chatid);
             $order = get_order($choise_data);
             if ($order['customer_id'] == $user_id) {
-                SendMessage($msg_chatid, 'u can not be an executor of ur order');
+                SendMessage($msg_chatid, 'нельзя быть исполнителем собственного заказа');
                 exit(0);
             }
             
             $user_executor = get_user($user_id);
-            $text = $user_executor['name']." (rating: ".round($user_executor['rating'], 1)."/5)wants to do ur order [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].").";
+            $text = $user_executor['name']." (рейтинг: ".round($user_executor['rating'], 1)."/5) хочет взяться за твой заказ [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].").";
             $data_to_send = new stdClass;
             $data_to_send->chat_id = $order['customer_id'];
             $data_to_send->text = $text;
@@ -64,14 +64,14 @@ function handle($json_message) {
             $data_to_send->disable_web_page_preview = true;
             $data_to_send->reply_markup = json_encode((object)(array(
                 'inline_keyboard' => array(array((object)(array(
-                    'text' => 'accept',
+                    'text' => 'принять',
                     'callback_data' => $user_id."/".$order['id']
                 ))))
             )));
             $response = file_get_contents(
                 'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
             );
-            SendMessage($msg_chatid, 'kkey, wait until customer will accept u');
+            SendMessage($msg_chatid, 'жди, пока заказчик согласиться на работу с тобой');
         } else if ($msg == '/add_order') {
                 //create order, get its id
                 $order_id = create_order($msg_chatid);
@@ -80,7 +80,7 @@ function handle($json_message) {
                 //set user current order fill
                 set_user_current_order_fill($msg_chatid, $order_id);
                 //send message
-                SendMessage($msg_chatid, 'kkey, now send me name for ur order (32 chars max)');
+                SendMessage($msg_chatid, 'напишите название предмета или задания');
 
         } else if ($msg == '/my_orders') {
             $my_orders_as_executor = get_orders_as_executor($user['id']);
@@ -89,17 +89,17 @@ function handle($json_message) {
             $text = "";
 
             if ($my_orders_as_executor === false && $my_orders_as_customer == false) {
-                $text = "u have no orders";
+                $text = "у тебя нет заказов. опубликуй командой /add_order или возьмись за существующий";
             }
 
             if ($my_orders_as_executor !== false) {
-                $text .= "I'm executor in theese orders: \n";
+                $text .= "я исполнитель в заказах: \n";
                 foreach ($my_orders_as_executor as $line) {
                     $text .= "[".$line['name']."](https://t.me/reshalychannel/".$line['post_id'].")\n";
                 }
             }
             if ($my_orders_as_customer !== false) {
-                $text .= "I'm customer in theese orders: \n";
+                $text .= "я заказчик в заказах: \n";
                 foreach ($my_orders_as_customer as $line) {
                     $text .= "[".$line['name']."](https://t.me/reshalychannel/".$line['post_id'].")\n";
                 }
@@ -109,15 +109,15 @@ function handle($json_message) {
 
         } else if ($msg == '/info') {
 
-            SendMessageWithMarkdown($msg_chatid, "info about this bot");
+            SendMessageWithMarkdown($msg_chatid, "информация про бота");
 
         } else if ($msg == '/my_rating') {
             $rating = round($user['rating'], 1);
-            SendMessageWithMarkdown($msg_chatid, "ur rating is $rating/5");
+            SendMessageWithMarkdown($msg_chatid, "твой рейтинг: $rating/5");
 
         } else if ($msg == '/feedback') {
 
-            SendMessageWithMarkdown($msg_chatid, "kkey, send me ur anonymous feedback");
+            SendMessageWithMarkdown($msg_chatid, "теперь пришли мне анонимный отзыв");
             set_user_step($msg_chatid, 8);
 
         } else {
@@ -127,40 +127,40 @@ function handle($json_message) {
             switch ($step) {
                 case 1:
                     if ($msg_len < 1 || $msg_len > 32) {
-                        SendMessage($msg_chatid, 'send me text from 1 to 32 chars');
+                        SendMessage($msg_chatid, 'название должно быть не меньше 5 символов и не больше 32 символов. попробуй ещё раз');
                         exit(0);
                     }
                     $order_id = $user['current_order_fill'];
                     change_order($order_id, 'name', "'$msg'");
                     set_user_step($msg_chatid, 2);
-                    SendMessage($msg_chatid, 'kkey, now send me description for ur order (256 chars max)');
+                    SendMessage($msg_chatid, 'максимально подробно опиши задание');
                     break;
                 case 2:
                     $order_id = $user['current_order_fill'];
                     change_order($order_id, 'description', "'$msg'");
                     set_user_step($msg_chatid, 3);
-                    SendMessage($msg_chatid, 'kkey, now send me price of ur order');
+                    SendMessage($msg_chatid, 'введи цену заказа указывая валюту. (минимальная цена - 30 грн. также можешь указать что цена договорная');
                     if ($msg_len < 1 || $msg_len > 256) {
-                        SendMessage($msg_chatid, 'send me text from 1 to 256 chars');
+                        SendMessage($msg_chatid, 'описание должно быть не меньше 10 символов и не больше 256 символов. попробуй ещё раз');
                         exit(0);
                     }
                     break;
                 case 3:
                     if ($msg_len < 1 || $msg_len > 16) {
-                        SendMessage($msg_chatid, 'send me text from 1 to 16 chars');
+                        SendMessage($msg_chatid, 'цена должна быть не меньше 1 символа и не больше 16 символов. попробуй ещё раз');
                         exit(0);
                     }
                     $order_id = $user['current_order_fill'];
                     change_order($order_id, 'price', "'$msg'");
                     set_user_step($msg_chatid, 7);
-                    SendMessage($msg_chatid, "kkey, now send me a (ONE) file that will be added to ur order. if u dont wanna add any files, send me \"xyu\"");
+                    SendMessage($msg_chatid, "пришли один файл (именно один и именно файл), касающийся твоего заказа. если не хочешь - пришли \"не\"");
                     break;
                 case 4:
                     $order_id = $user['current_order_fill'];
                     if ($msg == 'Публиковать') {
                         set_user_step($msg_chatid, 0);
                         $publish_return = publish_order($order_id);
-                        if (!$publish_return->ok) SendMessage($msg_chatid, 'error publishing ur order');
+                        if (!$publish_return->ok) SendMessage($msg_chatid, 'не удалось опубликовать заказ');
                         else {
                             $post_id = $publish_return->result->message_id;
                             set_user_current_order_fill($msg_chatid, 'null');
@@ -169,7 +169,7 @@ function handle($json_message) {
                             
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = $msg_chatid;
-                            $data_to_send->text = "kkey, here's ur order link: https://t.me/reshalychannel/$post_id";
+                            $data_to_send->text = "[твой заказ](https://t.me/reshalychannel/$post_id) был успешно опубликован";
                             $data_to_send->parse_mode = 'markdown';
                             $data_to_send->disable_web_page_preview = true;
                             $data_to_send->reply_markup = json_encode((object)(array(
@@ -178,14 +178,14 @@ function handle($json_message) {
                             $response = file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
                             );
-                            SendMessage($msg_chatid, "now u can add one more order by sending me /add_order command");
+                            // SendMessage($msg_chatid, "тепе /add_order command");
                         }
                     } else if ($msg == 'Отменить') {
                         set_user_step($msg_chatid, 0);
                         delete_order($order_id);
                         $data_to_send = new stdClass;
                         $data_to_send->chat_id = $msg_chatid;
-                        $data_to_send->text = "your order was successfully deleted";
+                        $data_to_send->text = "заказ был успешно удалён";
                         $data_to_send->parse_mode = 'markdown';
                         $data_to_send->disable_web_page_preview = true;
                         $data_to_send->reply_markup = json_encode((object)(array(
@@ -195,27 +195,27 @@ function handle($json_message) {
                             'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
                         );
                     } else {
-                        SendMessage($msg_chatid, "incorrect command");
+                        SendMessage($msg_chatid, "неверная команда");
                     }
                     break;
                 
                 case 5: 
                     if ($msg_len < 1 || $msg_len > 32) {
-                        SendMessage($msg_chatid, 'send me text from 1 to 32 chars');
+                        SendMessage($msg_chatid, 'имя должно быть от 1 до 32 символов. попробуй ещё раз');
                         exit(0);
                     }
                     change_user($msg_chatid, 'name', "'$msg'");
                     set_user_step($msg_chatid, 6);
-                    SendMessage($msg_chatid, "kkey, now send me ur university");
+                    SendMessage($msg_chatid, "пришли мне название своего универа и специальности");
                 break;
                 case 6: 
                     if ($msg_len < 1 || $msg_len > 32) {
-                        SendMessage($msg_chatid, 'send me text from 1 to 32 chars');
+                        SendMessage($msg_chatid, 'универ и специальность должны быть от 1 до 32 символов. попробуй ещё раз');
                         exit(0);
                     }
                     change_user($msg_chatid, 'univ', "'$msg'");
                     set_user_step($msg_chatid, 0);
-                    SendMessage($msg_chatid, "kkey, now u can add an order by sending me /add_order command");
+                    SendMessage($msg_chatid, "отлично! для добавления заказа отправь мне команду /add_order");
                 break;
                 case 7: 
                     $order_id = $user['current_order_fill'];
@@ -231,7 +231,7 @@ function handle($json_message) {
                         ));
 
                         if (!$response->ok) {
-                            SendMessage($msg_chatid, 'error processing ur file');
+                            SendMessage($msg_chatid, 'не удалось опубликовать файл');
                             exit(0);
                         } 
                         else {
@@ -239,7 +239,7 @@ function handle($json_message) {
                         }
 
                         change_order($order_id, 'file_id', "'".$post_id."'");
-                        SendMessage($msg_chatid, "kkey, this document was added to ur order");
+                        SendMessage($msg_chatid, "файл был успешно прикреплён к твоему заказу");
                     }
 
                     set_user_step($msg_chatid, 4);
@@ -249,11 +249,11 @@ function handle($json_message) {
                     if ($line['file_id'] != null) $file = "[.](https://t.me/reshalymedia/".$line['file_id'].")";
 
 $text = 
-"Order
+"Заказ
 *".$line['name']."*
 ".$line['description']."
-Price: ".$line['price']."
-Customer rating: ".round($user['rating'], 1)."/5$file";
+Цена: ".$line['price']."
+Рейтинг заказчика: ".round($user['rating'], 1)."/5$file";
                     $data_to_send = new stdClass;
                         $data_to_send->chat_id = $msg_chatid;
                         $data_to_send->text = $text;
@@ -275,14 +275,14 @@ Customer rating: ".round($user['rating'], 1)."/5$file";
                         'https://api.telegram.org/bot'.getenv('bot_token').'/forwardMessage?'.http_build_query($data_to_send, '', '&')
                     );
                             
-                    SendMessageWithMarkdown($msg_chatid, "kkey, thanks u 4 ur feedback");
+                    SendMessageWithMarkdown($msg_chatid, "спасибо за отзыв!");
                     set_user_step($msg_chatid, 0);
                 break;
                 case 9: 
                     if ($msg == '1' || $msg == '2' || $msg == '3' || $msg == '4' || $msg == '5') {
                         $data_to_send = new stdClass;
                         $data_to_send->chat_id = $msg_chatid;
-                        $data_to_send->text = 'kkey, thanks 4 ur vote';
+                        $data_to_send->text = 'спасибо за твою оценку';
                         $data_to_send->reply_markup = json_encode((object)(array(
                             'remove_keyboard' => true
                         )));
@@ -293,12 +293,12 @@ Customer rating: ".round($user['rating'], 1)."/5$file";
                         set_user_current_order_fill($msg_chatid, 'NULL');
                         set_user_step($msg_chatid, 0);
                     } else {
-                        SendMessage($msg_chatid, "kkey, u havent voted.");
+                        SendMessage($msg_chatid, "твоя оценка не была учтена");
                         set_user_step($msg_chatid, 0);
                     }
                 break;
                     default:
-                SendMessage($msg_chatid, 'send me a command');
+                SendMessage($msg_chatid, 'пришли мне команду');
                     break;
             }
         }

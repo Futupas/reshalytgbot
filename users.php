@@ -143,12 +143,12 @@ function delete_order($order_id) {
     $data_to_send->chat_id = -1001271762698;
     $data_to_send->message_id = $order['post_id'];
     $data_to_send->text =
-"Order
+"Заказ
 *".$order['name']."*
 ".$order['description']."
-Price: ".$order['price']."
-Customer rating: ".round($customer['rating'], 1)."/5$file
-Done.";
+Цена: ".$order['price']."
+Рейтинг заказчика: ".round($customer['rating'], 1)."/5$file
+Выполнен.";
     $data_to_send->parse_mode = 'markdown';
     $data_to_send->disable_web_page_preview = false;
     $data_to_send->reply_markup = '';
@@ -243,11 +243,11 @@ function publish_order($order_id) {
     if ($line['file_id'] != null) $file = "[.](https://t.me/reshalymedia/".$line['file_id'].")";
 
     $text = 
-"Order
+"Заказ
 *".$line['name']."*
 ".$line['description']."
-Price: ".$line['price']."
-Customer rating: ".round($user['rating'], 1)."/5$file";
+Цена: ".$line['price']."
+Рейтинг заказчика: ".round($user['rating'], 1)."/5$file";
 
     $data_to_send = new stdClass;
     $data_to_send->chat_id = -1001271762698;
@@ -256,7 +256,7 @@ Customer rating: ".round($user['rating'], 1)."/5$file";
     $data_to_send->disable_web_page_preview = false;
     $data_to_send->reply_markup = json_encode((object)(array(
         'inline_keyboard' => array(array((object)(array(
-            'text' => 'i can do it',
+            'text' => 'берусь!',
             'url' => 'https://t.me/reshalybot?start='.$line['id']
         ))))
     )));
