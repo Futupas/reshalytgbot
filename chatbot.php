@@ -316,6 +316,7 @@
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendVoice?'.http_build_query($data_to_send, '', '&')
                             ));
                             add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], 'voice:'.$json_message->message->voice->file_id);
+                            add_row_to_chat_messages_table_with_text($msg_chatid, $json_message->message->message_id, $chat_message['destination_chat_id'], $chat_message['order_id'], 'voice:'.$json_message->message->voice->file_id);
                             exit(0);
                         }
                         if (property_exists($json_message->message, 'document')) {
@@ -330,6 +331,7 @@
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendDocument?'.http_build_query($data_to_send, '', '&')
                             ));
                             add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], 'document:'.$json_message->message->document->file_id);
+                            add_row_to_chat_messages_table_with_text($msg_chatid, $json_message->message->message_id, $chat_message['destination_chat_id'], $chat_message['order_id'], 'document:'.$json_message->message->voice->file_id);
                             exit(0);
                         }
                         // if (property_exists($json_message->message, 'sticker')) {
