@@ -90,6 +90,8 @@ function handle($json_message) {
 
             if ($my_orders_as_executor === false && $my_orders_as_customer == false) {
                 $text = "у тебя нет заказов. опубликуй командой /add_order или возьмись за существующий";
+                SendMessage($msg_chatid, $text);
+                exit(0);
             }
 
             if ($my_orders_as_executor !== false) {
