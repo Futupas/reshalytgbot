@@ -246,7 +246,7 @@ function publish_order($order_id) {
 *".$line['name']."*
 ".$line['description']."
 Цена: ".$line['price']."
-Рейтинг заказчика: ".round($user['rating'], 1)."/5$file";
+Рейтинг заказчика: ".round($customer['rating'], 1)."/5$file";
 
     $data_to_send = new stdClass;
     $data_to_send->chat_id = -1001271762698;
