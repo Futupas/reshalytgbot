@@ -6,7 +6,7 @@
     
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $requestString = file_get_contents('php://input');
-        $json_message = json_decode($requestString);
+        $json_message = (object)json_decode($requestString);
         add_log($requestString);
 
         if (property_exists($json_message, 'pre_checkout_query')) {
@@ -175,6 +175,7 @@
                         SendMessageToChatBotWithNoOrder($msg_chatid, 'ты ответил на сообщение, не имеющее отношения к какому-либо заказу');
                         exit(0);
                     }
+
                     $order = get_order($chat_message['order_id']);
                    
                     if (isset($msg)) {

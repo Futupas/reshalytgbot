@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $requestData = json_decode($requestString);
     add_log($requestString);
 
-    handle($requestData);
+    handle((object)$requestData);
 
 } else {
     echo('Прожектор Перестройки');
