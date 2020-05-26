@@ -142,6 +142,7 @@
                         'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
                     ));
                     add_row_to_chat_messages_table($user_id, $response->result->message_id, $order['executor_id'], $choise_data);
+                    SendMessageToChatBot($order['executor_id'], "заказчик ($customer_name заказ \"".$order['name']."\") зашёл в чат", $order);
                 } else if ($user_id == $order['executor_id']) {
                     // $text = "ккеу, сбщ, которые ты отправишь мне, отвечая на это сбщ, я отправлю заказчику заказа \"".$order['name']."\". И все сбщ, которые ты отправишь, отвечая на его сбщ, так же отправятся ему. ответь сообщением /done что б завершить заказ со своей стороны. когда заказ буит закрыт с двух сторон, исполнитель получить лв, а статус заказа перейдёт в выполненный";
                     $text = "ты в анонимном чате с $customer_name по заказу “".$order['name']."”. 
@@ -159,6 +160,7 @@
                         'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
                     ));
                     add_row_to_chat_messages_table($user_id, $response->result->message_id, $order['customer_id'], $choise_data);
+                    SendMessageToChatBot($order['customer_id'], "заказчик ($executor_name заказ \"".$order['name']."\") зашёл в чат", $order);
                 } else {
                     SendMessageToChatBotWithNoOrder($msg_chatid, 'нельзя использовать этот бот без заказа');
                     exit(0);
@@ -174,28 +176,35 @@
                         exit(0);
                     }
                     $order = get_order($chat_message['order_id']);
+                   
+                    if (isset($msg) && $msg != '')
+                    add_row_to_chat_messages_table_with_text($msg_chatid, $json_message->message->message_id, $chat_message['destination_chat_id'], $chat_message['order_id'], $msg);
+                    
+                    $order_name = $order['name'];
+                    $executor_name = get_user($order['executor_id'])['name'];
+                    $customer_name = get_user($order['customer_id'])['name'];
 
                     if ($msg == '/done') {
                         if ($msg_chatid == $order['customer_id']) {
                             change_order($order['id'], 'customer_done', 'true');
-                            if ($order['executor_done'] === 't') {
-                                $response = SendMessageToChatBot('c', 'заказ закрыт', $order);
-                                $response = SendMessageToChatBot('e', 'заказ закрыт. пришли мне сообщение в формате /card 4242424242424242 что б получить свои деньги', $order);
+                            if ($order["executor_done"] === "t") {
+                                $response = SendMessageToChatBot("c", "заказ \"$order_name\" закрыт", $order);
+                                $response = SendMessageToChatBot("e", "заказ \"$order_name\" закрыт. пришли мне сообщение в формате /card 4242424242424242 что б получить свои деньги", $order);
                             } else {
-                                $response = SendMessageToChatBot('c', 'ждём, пока исполнитель тоже не закроет заказ', $order);
-                                $response = SendMessageToChatBot('e', 'заказчик предложил закрыть заказ. пришли мне /done что б подтвердить это', $order);
+                                $response = SendMessageToChatBot("c", "ждём, пока исполнитель тоже не закроет заказ \"$order_name\"", $order);
+                                $response = SendMessageToChatBot("e", "заказчик ($customer_name, заказ \"$order_name\") предложил закрыть заказ. пришли мне /done что б подтвердить это", $order);
                             }
                             exit(0);
-                        } else if ($msg_chatid == $order['executor_id']) {
-                            change_order($order['id'], 'executor_done', 'true');
-                            if ($order['customer_done'] === 't') {
-                                $response = SendMessageToChatBot('e', 'заказ закрыт. пришли мне сообщение в формате /card 4242424242424242 что б получить свои деньги', $order);
+                        } else if ($msg_chatid == $order["executor_id"]) {
+                            change_order($order["id"], "executor_done", "true");
+                            if ($order["customer_done"] === "t") {
+                                $response = SendMessageToChatBot("e", "заказ \"$order_name\" закрыт. пришли мне сообщение в формате /card 4242424242424242 что б получить свои деньги", $order);
 
-                                $response = SendMessageToChatBot('c', 'заказ закрыт', $order);
+                                $response = SendMessageToChatBot("c", "заказ \"$order_name\" закрыт", $order);
                             } else {
-                                $response = SendMessageToChatBot('e', 'ждём, пока заказчик тоже не закроет заказ', $order);
+                                $response = SendMessageToChatBot("e", "ждём, пока заказчик тоже не закроет заказ \"$order_name\"", $order);
 
-                                $response = SendMessageToChatBot('c', 'исполнитель предложил закрыть заказ. пришли мне /done что б подтвердить это', $order);
+                                $response = SendMessageToChatBot("c", "исполнитель ($executor_name, \"$order_name\") предложил закрыть заказ. пришли мне /done что б подтвердить это", $order);
                             }
                             exit(0);
                         } else {
@@ -285,7 +294,7 @@
                         } else if ($msg_chatid == $order['executor_id']) {
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = getenv('admin_chat');
-                            $data_to_send->text = 'админы, пришлите '.$order['customer_price'].' грн на карту '.$cardnum.'.';
+                            $data_to_send->text = 'админы, пришлите '.$order['customer_price'].' грн на карту `'.$cardnum.'`.';
                             $data_to_send->parse_mode = 'markdown';
                             $data_to_send->disable_web_page_preview = true;
                             $data_to_send->reply_markup = json_encode((object)(array(
@@ -308,14 +317,27 @@
                             $order = get_order($chat_message['order_id']);
                             $text = "*".$user['name']."*:\n$msg";
                             $response = SendMessageWithMarkdownToChatBot($chat_message['destination_chat_id'], $text, $order);
-                            add_row_to_chat_messages_table_with_text($msg_chatid, $json_message->message->message_id, $chat_message['destination_chat_id'], $chat_message['order_id'], $msg);
+                            // add_row_to_chat_messages_table_with_text($msg_chatid, $json_message->message->message_id, $chat_message['destination_chat_id'], $chat_message['order_id'], $msg);
                             exit(0);
                         }
                         if (property_exists($json_message->message, 'voice')) {
                             $voice = $json_message->message->voice;
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = $chat_message['destination_chat_id'];
-                            $data_to_send->voice = $json_message->message->voice->file_id;
+                            $data_to_send->voice = $voice;
+                            $data_to_send->caption = '(от '.$user['name'].')';
+                            $response = json_decode(file_get_contents(
+                                'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendVoice?'.http_build_query($data_to_send, '', '&')
+                            ));
+                            add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], 'voice:'.$json_message->message->voice->file_id);
+                            add_row_to_chat_messages_table_with_text($msg_chatid, $json_message->message->message_id, $chat_message['destination_chat_id'], $chat_message['order_id'], 'voice:'.$json_message->message->voice->file_id);
+                            exit(0);
+                        }
+                        if (property_exists($json_message->message, 'photo')) {
+                            $photo = $json_message->message->photo[count($json_message->message->photo)-1];
+                            $data_to_send = new stdClass;
+                            $data_to_send->chat_id = $chat_message['destination_chat_id'];
+                            $data_to_send->photo = $json_message->message->photo->file_id;
                             $data_to_send->caption = '(от '.$user['name'].')';
                             $response = json_decode(file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendVoice?'.http_build_query($data_to_send, '', '&')
@@ -328,7 +350,7 @@
                             $document = $json_message->message->document;
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = $chat_message['destination_chat_id'];
-                            $data_to_send->document = $json_message->message->document->file_id;
+                            $data_to_send->document = $document;
                             $data_to_send->caption = '(от '.$user['name'].')';
                             $response = json_decode(file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendDocument?'.http_build_query($data_to_send, '', '&')
@@ -338,7 +360,7 @@
                             exit(0);
                         }
                         $order = get_order($chat_message['order_id']);
-                        $response = SendMessageToChatBot($msg_chatid, 'ты можешь отправить только текст, файл или голосовое сообщение', $order);
+                        $response = SendMessageToChatBot($msg_chatid, 'ты можешь отправить только текст, фото, файл или голосовое сообщение', $order);
                         exit(0);
                     }
                 } else {

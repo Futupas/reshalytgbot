@@ -71,7 +71,7 @@ function handle($json_message) {
             $response = file_get_contents(
                 'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
             );
-            SendMessage($msg_chatid, 'жди, пока заказчик согласиться на работу с тобой');
+            SendMessage($msg_chatid, 'жди, пока заказчик согласится на работу с тобой');
         } else if ($msg == '/add_order') {
                 //create order, get its id
                 $order_id = create_order($msg_chatid);
