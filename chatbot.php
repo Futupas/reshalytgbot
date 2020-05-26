@@ -328,7 +328,7 @@
                             $voice = $json_message->message->voice;
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = $chat_message['destination_chat_id'];
-                            $data_to_send->voice = $voice;
+                            $data_to_send->voice = $voice->file_id;
                             $data_to_send->caption = '(от '.$user['name'].')';
                             $response = json_decode(file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendVoice?'.http_build_query($data_to_send, '', '&')
@@ -355,7 +355,7 @@
                             $document = $json_message->message->document;
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = $chat_message['destination_chat_id'];
-                            $data_to_send->document = $document;
+                            $data_to_send->document = $document->file_id;
                             $data_to_send->caption = '(от '.$user['name'].')';
                             $response = json_decode(file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendDocument?'.http_build_query($data_to_send, '', '&')
