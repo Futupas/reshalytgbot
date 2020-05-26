@@ -83,7 +83,7 @@
         }
 
         
-        if ($json_message->chat->id == getenv('admin_chat')) exit(0);
+        if ($json_message->message->chat->id == getenv('admin_chat')) exit(0);
     
         $sender_is_bot = $json_message->message->from->is_bot;
         $msg_senderid = $json_message->message->from->id;
@@ -160,7 +160,7 @@
                         'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
                     ));
                     add_row_to_chat_messages_table($user_id, $response->result->message_id, $order['customer_id'], $choise_data);
-                    SendMessageToChatBot($order['customer_id'], "заказчик ($executor_name заказ \"".$order['name']."\") зашёл в чат", $order);
+                    SendMessageToChatBot($order['customer_id'], "заказчик ($executor_name, заказ \"".$order['name']."\") зашёл в чат", $order);
                 } else {
                     SendMessageToChatBotWithNoOrder($msg_chatid, 'нельзя использовать этот бот без заказа');
                     exit(0);
@@ -204,7 +204,7 @@
                             } else {
                                 $response = SendMessageToChatBot("e", "ждём, пока заказчик тоже не закроет заказ \"$order_name\"", $order);
 
-                                $response = SendMessageToChatBot("c", "исполнитель ($executor_name, \"$order_name\") предложил закрыть заказ. пришли мне /done что б подтвердить это", $order);
+                                $response = SendMessageToChatBot("c", "исполнитель ($executor_name, заказ \"$order_name\") предложил закрыть заказ. пришли мне /done что б подтвердить это", $order);
                             }
                             exit(0);
                         } else {
@@ -245,7 +245,7 @@
                                 $response = SendMessageToChatBot('e', 'цена была подтверждена, жди сообщения', $order);
                             } else {
                                 $response = SendMessageToChatBot('c', 'твоя цена была установлена, ждём, когда исполнитель её подтвердит', $order);
-                                $response = SendMessageToChatBot('e', 'заказчик предложил цену '.$price.' грн', $order);
+                                $response = SendMessageToChatBot('e', "заказчик ($customer_name, заказ \"$order_name\") предложил цену ".$price.' грн', $order);
                             }
                             exit(0);
                         } else if ($msg_chatid == $order['executor_id']) {
@@ -271,7 +271,7 @@
                                 $response = SendMessageToChatBot('e', 'цена была подтверждена, жди сообщения', $order);
                             } else {
                                 $response = SendMessageToChatBot('e', 'твоя цена была установлена, ждём, когда заказчик её подтвердит', $order);
-                                $response = SendMessageToChatBot('c', 'исполнитель предложил цену '.$price.' грн', $order);
+                                $response = SendMessageToChatBot('c', "исполнитель ($executor_name, заказ \"$order_name\") предложил цену ".$price.' грн', $order);
                             }
                             exit(0);
                         } else {
@@ -334,13 +334,14 @@
                             exit(0);
                         }
                         if (property_exists($json_message->message, 'photo')) {
-                            $photo = $json_message->message->photo[count($json_message->message->photo)-1];
+                            $photos = (array)($json_message->message->photo);
+                            $photo = $photos[count($photos)-1];
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = $chat_message['destination_chat_id'];
-                            $data_to_send->photo = $json_message->message->photo->file_id;
+                            $data_to_send->photo = $photo['file_id'];
                             $data_to_send->caption = '(от '.$user['name'].')';
                             $response = json_decode(file_get_contents(
-                                'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendVoice?'.http_build_query($data_to_send, '', '&')
+                                'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendPhoto?'.http_build_query($data_to_send, '', '&')
                             ));
                             add_row_to_chat_messages_table_with_text($chat_message['destination_chat_id'], $response->result->message_id, $msg_chatid, $chat_message['order_id'], 'voice:'.$json_message->message->voice->file_id);
                             add_row_to_chat_messages_table_with_text($msg_chatid, $json_message->message->message_id, $chat_message['destination_chat_id'], $chat_message['order_id'], 'voice:'.$json_message->message->voice->file_id);
