@@ -338,7 +338,7 @@
                             $photo = $photos[count($photos)-1];
                             $data_to_send = new stdClass;
                             $data_to_send->chat_id = $chat_message['destination_chat_id'];
-                            $data_to_send->photo = $photo['file_id'];
+                            $data_to_send->photo = $photo->file_id;
                             $data_to_send->caption = '(от '.$user['name'].')';
                             $response = json_decode(file_get_contents(
                                 'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendPhoto?'.http_build_query($data_to_send, '', '&')
