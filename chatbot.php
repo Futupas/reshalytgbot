@@ -177,8 +177,11 @@
                     }
                     $order = get_order($chat_message['order_id']);
                    
-                    if (isset($msg) && $msg != '')
-                    add_row_to_chat_messages_table_with_text($msg_chatid, $json_message->message->message_id, $chat_message['destination_chat_id'], $chat_message['order_id'], $msg);
+                    if (isset($msg)) {
+                        if ($msg == '') add_row_to_chat_messages_table_with_text($msg_chatid, $json_message->message->message_id, $chat_message['destination_chat_id'], $chat_message['order_id'], $msg);
+                        else add_row_to_chat_messages_table($msg_chatid, $json_message->message->message_id, $chat_message['destination_chat_id'], $chat_message['order_id']);
+                    }
+                    
                     
                     $order_name = $order['name'];
                     $executor_name = get_user($order['executor_id'])['name'];
