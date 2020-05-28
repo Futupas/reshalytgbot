@@ -255,7 +255,7 @@ function publish_order($order_id) {
     $data_to_send->disable_web_page_preview = false;
     $data_to_send->reply_markup = json_encode((object)(array(
         'inline_keyboard' => array(array((object)(array(
-            'text' => 'берусь!',
+            'text' => 'Беру🤝',
             'url' => 'https://t.me/reshalybot?start='.$line['id']
         ))))
     )));
