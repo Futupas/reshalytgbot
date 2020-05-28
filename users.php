@@ -144,8 +144,11 @@ function delete_order($order_id) {
     $data_to_send->message_id = $order['post_id'];
     $data_to_send->text =
 "🟢Выполнен
+
 *".$order['name']."*
+
 ".$order['description']."
+
 Цена: ".$order['price']."
 Рейтинг заказчика: ".round($customer['rating'], 1)."/5$file";
     $data_to_send->parse_mode = 'markdown';
@@ -243,8 +246,11 @@ function publish_order($order_id) {
 
     $text = 
 "🔵Активно
+
 *".$line['name']."*
+
 ".$line['description']."
+
 Цена: ".$line['price']."
 Рейтинг заказчика: ".round($customer['rating'], 1)."/5$file";
 

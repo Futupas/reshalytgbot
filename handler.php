@@ -252,8 +252,11 @@ function handle($json_message) {
 
 $text = 
 "🔵Активно
+
 *".$line['name']."*
+
 ".$line['description']."
+
 Цена: ".$line['price']."
 Рейтинг заказчика: ".round($user['rating'], 1)."/5$file";
                     $data_to_send = new stdClass;
