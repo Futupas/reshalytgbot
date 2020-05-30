@@ -25,8 +25,8 @@ function handle_callback($json_message) {
             $user_executor = get_user($executor_id);
             $user_customer = get_user($order['customer_id']);
 
-            SendMessageWithMarkdown($customer_id, "[Нажми эту ссылку](https://t.me/reshalychatbot?start=".$order['id'].") для общения с исполнителем заказа [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].") (его зовут ".$user_executor['name'].")");
-            SendMessageWithMarkdown($executor_id, "[Нажми эту ссылку](https://t.me/reshalychatbot?start=".$order['id'].") для общения с заказчиком заказа [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].") (его зовут ".$user_customer['name'].")");
+            SendMessageWithMarkdown($customer_id, "[Нажмите на эту ссылку](https://t.me/reshalychatbot?start=".$order['id'].") для общения с исполнителем заказа [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].") (его зовут ".$user_executor['name'].")");
+            SendMessageWithMarkdown($executor_id, "[Нажмите на эту ссылку](https://t.me/reshalychatbot?start=".$order['id'].") для общения с заказчиком заказа [\"".$order['name']."\"](https://t.me/reshalychannel/".$order['post_id'].") (его зовут ".$user_customer['name'].")");
 
 
             $file = "";
@@ -56,7 +56,7 @@ function handle_callback($json_message) {
             file_get_contents('https://api.telegram.org/bot'.getenv('bot_token').'/answerCallbackQuery?'.
             http_build_query((object)array(
                 'callback_query_id' => $callback_query_id,
-                'text' => 'нельзя разрешить один заказ дважды'
+                'text' => 'Нельзя разрешить один заказ дважды'
             )));
         }
     }
