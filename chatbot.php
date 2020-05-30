@@ -55,6 +55,13 @@
                 $response = (object)json_decode(file_get_contents(
                     'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
                 ));
+
+                file_get_contents('https://api.telegram.org/bot'.getenv('chat_bot_token').'/editMessageReplyMarkup?'.
+                http_build_query((object)array(
+                    'chat_id' => $json_message->callback_query->message->chat->id,
+                    'message_id' => $json_message->callback_query->message->message_id,
+                    'reply_markup' => ''
+                )));
                 exit(0);
             }
             if (strpos($choise_data, 'a_') === 0) {
@@ -68,6 +75,13 @@
                 $response = SendMessageToChatBot('e', 'Вы можете приступить к выполнению заказа ('.$order['name'].') ибо заказчик уже оплатил его', $order);
                 $response = SendMessageToChatBot('c', 'Исполнитель заказа '.$order['name'].' получил сообщение, что может приступать к работе', $order);
     
+
+                file_get_contents('https://api.telegram.org/bot'.getenv('chat_bot_token').'/editMessageReplyMarkup?'.
+                http_build_query((object)array(
+                    'chat_id' => $json_message->callback_query->message->chat->id,
+                    'message_id' => $json_message->callback_query->message->message_id,
+                    'reply_markup' => ''
+                )));
                 exit(0);
             }
 
