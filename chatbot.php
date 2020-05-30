@@ -9,20 +9,20 @@
         $json_message = (object)json_decode($requestString);
         add_log($requestString);
 
-        if (property_exists($json_message, 'pre_checkout_query')) {
-            $order_id = $json_message->pre_checkout_query->invoice_payload;
-            $pre_checkout_query_id = $json_message->pre_checkout_query->id;
-            $order = get_order($order_id);
-            $data_to_send = new stdClass;
-            $data_to_send->pre_checkout_query_id = $pre_checkout_query_id;
-            $data_to_send->ok = true;
-            $response = (object)json_decode(file_get_contents(
-                'https://api.telegram.org/bot'.getenv('chat_bot_token').'/answerPreCheckoutQuery?'.http_build_query($data_to_send, '', '&')
-            ));
-            $response = SendMessageToChatBot('e', 'Вы можете приступить к выполнению заказа ('.$order['name'].') ибо заказчик уже оплатил его', $order);
-            $response = SendMessageToChatBot('c', 'Исполнитель заказа '.$order['name'].' получил сообщение, что может приступать к работе', $order);
-            exit(0);
-        }
+        // if (property_exists($json_message, 'pre_checkout_query')) {
+        //     $order_id = $json_message->pre_checkout_query->invoice_payload;
+        //     $pre_checkout_query_id = $json_message->pre_checkout_query->id;
+        //     $order = get_order($order_id);
+        //     $data_to_send = new stdClass;
+        //     $data_to_send->pre_checkout_query_id = $pre_checkout_query_id;
+        //     $data_to_send->ok = true;
+        //     $response = (object)json_decode(file_get_contents(
+        //         'https://api.telegram.org/bot'.getenv('chat_bot_token').'/answerPreCheckoutQuery?'.http_build_query($data_to_send, '', '&')
+        //     ));
+        //     $response = SendMessageToChatBot('e', 'Вы можете приступить к выполнению заказа ('.$order['name'].') ибо заказчик уже оплатил его', $order);
+        //     $response = SendMessageToChatBot('c', 'Исполнитель заказа '.$order['name'].' получил сообщение, что может приступать к работе', $order);
+        //     exit(0);
+        // }
         if (property_exists($json_message, 'message') && property_exists($json_message->message, 'successful_payment')) {
             exit(0);
         }
@@ -32,6 +32,44 @@
             $user_id = $json_message->callback_query->from->id;
             $choise_data = $json_message->callback_query->data;
             $msg_id = $json_message->callback_query->message->message_id;
+
+            if (strpos($choise_data, 's_') === 0) {
+                file_get_contents('https://api.telegram.org/bot'.getenv('chat_bot_token').'/answerCallbackQuery?'.
+                http_build_query((object)array(
+                    'callback_query_id' => $callback_query_id,
+                    'text' => 'Ждите, пока админы это не подтвердят'
+                )));
+                $order_id = substr($choise_data, 2, strlen($choise_data)-2);
+                $order = get_order($order_id);
+
+                $data_to_send->chat_id = getenv('admin_chat');
+                $data_to_send->text = 'Должно было прийти '.$order['customer_price'].' грн с комментарием "'.$order['id'].'". Подтвердите это.';
+                $data_to_send->parse_mode = 'markdown';
+                $data_to_send->disable_web_page_preview = true;
+                $data_to_send->reply_markup = json_encode((object)(array(
+                    'inline_keyboard' => array(array((object)(array(
+                        'text' => 'Подтверждаю',
+                        'callback_data' => 'a_'.$order['id']
+                    ))))
+                )));
+                $response = (object)json_decode(file_get_contents(
+                    'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
+                ));
+                exit(0);
+            }
+            if (strpos($choise_data, 'a_') === 0) {
+                file_get_contents('https://api.telegram.org/bot'.getenv('chat_bot_token').'/answerCallbackQuery?'.
+                http_build_query((object)array(
+                    'callback_query_id' => $callback_query_id,
+                    'text' => 'Подтверждено'
+                )));
+                $order_id = substr($choise_data, 2, strlen($choise_data)-2);
+                $order = get_order($order_id);
+                $response = SendMessageToChatBot('e', 'Вы можете приступить к выполнению заказа ('.$order['name'].') ибо заказчик уже оплатил его', $order);
+                $response = SendMessageToChatBot('c', 'Исполнитель заказа '.$order['name'].' получил сообщение, что может приступать к работе', $order);
+    
+                exit(0);
+            }
 
             file_get_contents('https://api.telegram.org/bot'.getenv('chat_bot_token').'/answerCallbackQuery?'.
             http_build_query((object)array(
@@ -234,16 +272,29 @@
                                     exit(0);
                                 }
                                 $data_to_send = new stdClass;
+                                // $data_to_send->chat_id = $order['customer_id'];
+                                // $data_to_send->title = "Order";
+                                // $data_to_send->description = $order['name'];
+                                // $data_to_send->payload = $order['id'];
+                                // $data_to_send->provider_token = getenv('pay_token');
+                                // $data_to_send->start_parameter = '15';
+                                // $data_to_send->currency = "UAH";
+                                // $data_to_send->prices = '[{"label":"'.$price.' uah", "amount": '.round($price*100/.96).'}]';
+                                // $response = (object)json_decode(file_get_contents(
+                                //     'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendInvoice?'.http_build_query($data_to_send, '', '&')
+                                // ));
                                 $data_to_send->chat_id = $order['customer_id'];
-                                $data_to_send->title = "Order";
-                                $data_to_send->description = $order['name'];
-                                $data_to_send->payload = $order['id'];
-                                $data_to_send->provider_token = getenv('pay_token');
-                                $data_to_send->start_parameter = '15';
-                                $data_to_send->currency = "UAH";
-                                $data_to_send->prices = '[{"label":"'.$price.' uah", "amount": '.round($price*100/.96).'}]';
+                                $data_to_send->text = 'Пришлите, пожалуйста '.$order['customer_price'].' грн на карту `'.getenv('admin_card').'` с комментарием "'.$order['id'].'", после чего нажмите "Прислал", дабы админы могли это подтвердить';
+                                $data_to_send->parse_mode = 'markdown';
+                                $data_to_send->disable_web_page_preview = true;
+                                $data_to_send->reply_markup = json_encode((object)(array(
+                                    'inline_keyboard' => array(array((object)(array(
+                                        'text' => 'Прислал',
+                                        'callback_data' => 's_'.$order['id']
+                                    ))))
+                                )));
                                 $response = (object)json_decode(file_get_contents(
-                                    'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendInvoice?'.http_build_query($data_to_send, '', '&')
+                                    'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
                                 ));
                                 add_row_to_chat_messages_table($msg_chatid, $response->result->message_id, ($msg_chatid == $order['customer_id'] ? $order['executor_id'] : $order['customer_id']), $order['id']);
                                 $response = SendMessageToChatBot('e', 'Цена была подтверждена, ждите сообщения', $order);
@@ -260,16 +311,29 @@
                                     exit(0);
                                 }
                                 $data_to_send = new stdClass;
+                                // $data_to_send->chat_id = $order['customer_id'];
+                                // $data_to_send->title = "Order";
+                                // $data_to_send->description = $order['name'];
+                                // $data_to_send->payload = $order['id'];
+                                // $data_to_send->provider_token = getenv('pay_token');
+                                // $data_to_send->start_parameter = '15';
+                                // $data_to_send->currency = "UAH";
+                                // $data_to_send->prices = '[{"label":"'.$price.' uah", "amount": '.round($price*100/.96).'}]';
+                                // $response = (object)json_decode(file_get_contents(
+                                //     'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendInvoice?'.http_build_query($data_to_send, '', '&')
+                                // ));
                                 $data_to_send->chat_id = $order['customer_id'];
-                                $data_to_send->title = "Order";
-                                $data_to_send->description = $order['name'];
-                                $data_to_send->payload = $order['id'];
-                                $data_to_send->provider_token = getenv('pay_token');
-                                $data_to_send->start_parameter = '15';
-                                $data_to_send->currency = "UAH";
-                                $data_to_send->prices = '[{"label":"'.$price.' uah", "amount": '.round($price*100/.96).'}]';
+                                $data_to_send->text = 'Пришлите, пожалуйста '.$order['customer_price'].' грн на карту `'.getenv('admin_card').'` с комментарием "'.$order['id'].'", после чего нажмите "Прислал", дабы админы могли это подтвердить';
+                                $data_to_send->parse_mode = 'markdown';
+                                $data_to_send->disable_web_page_preview = true;
+                                $data_to_send->reply_markup = json_encode((object)(array(
+                                    'inline_keyboard' => array(array((object)(array(
+                                        'text' => 'Прислал',
+                                        'callback_data' => 's_'.$order['id']
+                                    ))))
+                                )));
                                 $response = (object)json_decode(file_get_contents(
-                                    'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendInvoice?'.http_build_query($data_to_send, '', '&')
+                                    'https://api.telegram.org/bot'.getenv('chat_bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
                                 ));
                                 add_row_to_chat_messages_table($order['customer_id'], $response->result->message_id, $order['executor_id'], $order['id']);
                                 $response = SendMessageToChatBot('e', 'Цена была подтверждена, ждите сообщения', $order);
