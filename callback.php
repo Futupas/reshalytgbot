@@ -43,7 +43,7 @@ function handle_callback($json_message) {
 ".$order['description']."
 
 Цена: ".$order['price']."$file
-Рейтинг заказчика: ".round($user['rating'], 1)."/5";
+Рейтинг заказчика: ".round($user_customer['rating'], 1)."/5";
                 $data_to_send->parse_mode = 'markdown';
                 $data_to_send->disable_web_page_preview = false;
                 $data_to_send->reply_markup = '';
