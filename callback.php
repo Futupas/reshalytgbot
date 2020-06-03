@@ -30,7 +30,9 @@ function handle_callback($json_message) {
 
 
             $file = "";
-            if ($order['file_id'] != null) $file = "[.](https://t.me/reshalymedia/".$order['file_id'].")";
+            if ($order['file_id'] != null) $file = "[ ](https://t.me/reshalymedia/".$order['file_id'].")";
+            $rating = "";
+            if ($user_customer['rating_votes_quantity'] >= 3) $rating = "\nРейтинг заказчика: ".round($user_customer['rating'], 1)."/5 (отзывов: ".$user_customer['rating_votes_quantity'].")";
 
                 $data_to_send = new stdClass;
                 $data_to_send->chat_id = -1001271762698;
@@ -42,8 +44,7 @@ function handle_callback($json_message) {
 
 ".$order['description']."
 
-Цена: ".$order['price']."$file
-Рейтинг заказчика: ".round($user_customer['rating'], 1)."/5";
+Цена: ".$order['price']."$file $rating";
                 $data_to_send->parse_mode = 'markdown';
                 $data_to_send->disable_web_page_preview = false;
                 $data_to_send->reply_markup = '';

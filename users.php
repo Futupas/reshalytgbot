@@ -138,8 +138,11 @@ function delete_order($order_id) {
     
 
     $file = "";
-    if ($order['file_id'] != null) $file = "[.](https://t.me/reshalymedia/".$order['file_id'].")";
-    $data_to_send = new stdClass;
+    if ($order['file_id'] != null) $file = "[ ](https://t.me/reshalymedia/".$order['file_id'].")";
+    $rating = "";
+    if ($customer['rating_votes_quantity'] >= 3) $rating = "\nРейтинг заказчика: ".round($customer['rating'], 1)."/5 (отзывов: ".$customer['rating_votes_quantity'].")";
+    
+        $data_to_send = new stdClass;
     $data_to_send->chat_id = -1001271762698;
     $data_to_send->message_id = $order['post_id'];
     $data_to_send->text =
@@ -149,8 +152,7 @@ function delete_order($order_id) {
 
 ".$order['description']."
 
-Цена: ".$order['price']."
-Рейтинг заказчика: ".round($customer['rating'], 1)."/5$file";
+Цена: ".$order['price']." $file $rating";
     $data_to_send->parse_mode = 'markdown';
     $data_to_send->disable_web_page_preview = false;
     $data_to_send->reply_markup = '';
@@ -242,7 +244,9 @@ function publish_order($order_id) {
 
 
     $file = "";
-    if ($line['file_id'] != null) $file = "[.](https://t.me/reshalymedia/".$line['file_id'].")";
+    if ($line['file_id'] != null) $file = "[ ](https://t.me/reshalymedia/".$line['file_id'].")";
+    $rating = "";
+    if ($customer['rating_votes_quantity'] >= 3) $rating = "\nРейтинг заказчика: ".round($customer['rating'], 1)."/5 (отзывов: ".$customer['rating_votes_quantity'].")";
 
     $text = 
 "🔵Активно
@@ -251,8 +255,7 @@ function publish_order($order_id) {
 
 ".$line['description']."
 
-Цена: ".$line['price']."
-Рейтинг заказчика: ".round($customer['rating'], 1)."/5$file";
+Цена: ".$line['price']." $file $rating";
 
     $data_to_send = new stdClass;
     $data_to_send->chat_id = -1001271762698;

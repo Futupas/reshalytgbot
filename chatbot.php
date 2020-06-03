@@ -94,6 +94,9 @@
 
                 $order_id = $choise_data;
                 $order = get_order($order_id);
+                $order_name = $order['name'];
+                $customer_name = get_user($order['customer_id'])['name'];
+                $executor_name = get_user($order['executor_id'])['name'];
 
                 $response = SendMessageToChatBot('e', 'Деньги перевели', $order);
                 delete_order($order_id);
@@ -114,7 +117,7 @@
                 set_user_step($order['customer_id'], 9);
                 $data_to_send = new stdClass;
                 $data_to_send->chat_id = $order['customer_id'];
-                $data_to_send->text = "Оцените, пожалуйста, исполнителя заказа (1 - очень плохо, 5 - очень хорошо)";
+                $data_to_send->text = "Оцените, пожалуйста, решалу $executor_name, заказ \"$order_name\" (1 - очень плохо, 5 - очень хорошо)";
                 $data_to_send->reply_markup = json_encode((object)(array(
                     'keyboard' => array(array("1", "2", "3", "4", "5"))
                 )));
@@ -125,7 +128,7 @@
                 set_user_step($order['executor_id'], 9);
                 $data_to_send = new stdClass;
                 $data_to_send->chat_id = $order['executor_id'];
-                $data_to_send->text = "Оцените, пожалуйста, заказчика (1 - очень плохо, 5 - очень хорошо)";
+                $data_to_send->text = "Оцените, пожалуйста, заказчика $customer_name, заказ \"$order_name\" (1 - очень плохо, 5 - очень хорошо)";
                 $data_to_send->reply_markup = json_encode((object)(array(
                     'keyboard' => array(array("1", "2", "3", "4", "5"))
                 )));

@@ -248,9 +248,12 @@ function handle($json_message) {
 
                     set_user_step($msg_chatid, 4);
                     $line = get_order($order_id);
+                    $customer = get_user($line['customer_id']);
 
                     $file = "";
-                    if ($line['file_id'] != null) $file = "[.](https://t.me/reshalymedia/".$line['file_id'].")";
+                    if ($line['file_id'] != null) $file = "[ ](https://t.me/reshalymedia/".$line['file_id'].")";
+                    $rating = "";
+                    if ($customer['rating_votes_quantity'] >= 3) $rating = "\nРейтинг заказчика: ".round($customer['rating'], 1)."/5 (отзывов: ".$customer['rating_votes_quantity'].")";
 
 $text = 
 "🔵Активно
@@ -259,8 +262,7 @@ $text =
 
 ".$line['description']."
 
-Цена: ".$line['price']."
-Рейтинг заказчика: ".round($user['rating'], 1)."/5$file";
+Цена: ".$line['price']." $file $rating";
                     $data_to_send = new stdClass;
                         $data_to_send->chat_id = $msg_chatid;
                         $data_to_send->text = $text;

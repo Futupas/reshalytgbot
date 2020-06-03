@@ -33,3 +33,4 @@ error:1416F086:SSL routines:tls_process_server_certificate:certificate verify fa
 error:1416F086:SSL routines:tls_process_server_certificate:certificate verify failed in C:\PROJECTS\ReshalyBot\phptest.php on line 12
 [26-May-2020 19:37:57 UTC] PHP Warning:  file_get_contents(): Failed to enable crypto in C:\PROJECTS\ReshalyBot\phptest.php on line 12
 [26-May-2020 19:37:57 UTC] PHP Warning:  file_get_contents(https://api.telegram.org/bot1243741795:AAFVGzJKCfn17nT7B6mvbYTUE9yZQybYoMI/sendPhoto?chat_id=387489833&amp;photo=AgACAgIAAxkBAAIFyV7NaRAUb8CQbpeGnjKxK3iDAAEoRQACEq0xG1vicErll9r9ZNvhYr-L5pEuAAMBAAMCAAN5AAPIZwIAARkE&amp;caption=%28%D0%BE%D1%82+dddd%29): failed to open stream: operation failed in C:\PROJECTS\ReshalyBot\phptest.php on line 12
+[02-Jun-2020 19:35:14 UTC] PHP Warning:  pg_query(): Query failed: ERROR:  column &quot;price&quot; specified more than once in C:\PROJECTS\ReshalyBot\postgretest.php on line 41
