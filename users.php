@@ -147,12 +147,12 @@ function delete_order($order_id) {
     $data_to_send->message_id = $order['post_id'];
     $data_to_send->text =
 "🟢Выполнен
-
+$file
 *".$order['name']."*
 
 ".$order['description']."
 
-Цена: ".$order['price']." $file $rating";
+Цена: ".$order['price']." $rating";
     $data_to_send->parse_mode = 'markdown';
     $data_to_send->disable_web_page_preview = false;
     $data_to_send->reply_markup = '';
@@ -250,12 +250,12 @@ function publish_order($order_id) {
 
     $text = 
 "🔵Активно
-
+$file
 *".$line['name']."*
 
 ".$line['description']."
 
-Цена: ".$line['price']." $file $rating";
+Цена: ".$line['price']." $rating";
 
     $data_to_send = new stdClass;
     $data_to_send->chat_id = -1001271762698;

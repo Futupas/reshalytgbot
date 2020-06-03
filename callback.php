@@ -39,12 +39,12 @@ function handle_callback($json_message) {
                 $data_to_send->message_id = $order['post_id'];
                 $data_to_send->text =
 "🟡Выполняется
-
+$file
 *".$order['name']."*
 
 ".$order['description']."
 
-Цена: ".$order['price']."$file $rating";
+Цена: ".$order['price']." $rating";
                 $data_to_send->parse_mode = 'markdown';
                 $data_to_send->disable_web_page_preview = false;
                 $data_to_send->reply_markup = '';
