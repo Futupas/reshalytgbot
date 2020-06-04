@@ -72,7 +72,7 @@ function handle($json_message) {
             $response = file_get_contents(
                 'https://api.telegram.org/bot'.getenv('bot_token').'/sendMessage?'.http_build_query($data_to_send, '', '&')
             );
-            SendMessage($msg_chatid, 'Подождите пока заказчик согласиться на работу с вами.
+            SendMessage($msg_chatid, 'Подождите пока заказчик согласится на работу с вами.
 Если сообщение не пришло, это значит что заказчик начал работу с другим исполнителем');
         } else if ($msg == '/add_order') {
                 //create order, get its id
