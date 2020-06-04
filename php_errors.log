@@ -34,3 +34,29 @@ error:1416F086:SSL routines:tls_process_server_certificate:certificate verify fa
 [26-May-2020 19:37:57 UTC] PHP Warning:  file_get_contents(): Failed to enable crypto in C:\PROJECTS\ReshalyBot\phptest.php on line 12
 [26-May-2020 19:37:57 UTC] PHP Warning:  file_get_contents(https://api.telegram.org/bot1243741795:AAFVGzJKCfn17nT7B6mvbYTUE9yZQybYoMI/sendPhoto?chat_id=387489833&amp;photo=AgACAgIAAxkBAAIFyV7NaRAUb8CQbpeGnjKxK3iDAAEoRQACEq0xG1vicErll9r9ZNvhYr-L5pEuAAMBAAMCAAN5AAPIZwIAARkE&amp;caption=%28%D0%BE%D1%82+dddd%29): failed to open stream: operation failed in C:\PROJECTS\ReshalyBot\phptest.php on line 12
 [02-Jun-2020 19:35:14 UTC] PHP Warning:  pg_query(): Query failed: ERROR:  column &quot;price&quot; specified more than once in C:\PROJECTS\ReshalyBot\postgretest.php on line 41
+[04-Jun-2020 19:40:26 UTC] PHP Notice:  Undefined index: query in C:\PROJECTS\ReshalyBot\db.php on line 3
+[04-Jun-2020 19:40:26 UTC] PHP Warning:  pg_query(): Query failed:  in C:\PROJECTS\ReshalyBot\db.php on line 13
+[04-Jun-2020 19:42:34 UTC] PHP Notice:  Undefined index: query in C:\PROJECTS\ReshalyBot\db.php on line 3
+[04-Jun-2020 19:42:36 UTC] PHP Warning:  pg_query(): Query failed:  in C:\PROJECTS\ReshalyBot\db.php on line 13
+[04-Jun-2020 19:44:14 UTC] PHP Notice:  Undefined index: query in C:\PROJECTS\ReshalyBot\db.php on line 3
+[04-Jun-2020 19:44:15 UTC] PHP Warning:  pg_query(): Query failed:  in C:\PROJECTS\ReshalyBot\db.php on line 13
+[04-Jun-2020 19:45:22 UTC] PHP Warning:  pg_query(): Query failed: ERROR:  syntax error at or near &quot;query&quot;
+LINE 1: query=select%20*%20from%20users
+        ^ in C:\PROJECTS\ReshalyBot\db.php on line 13
+[04-Jun-2020 19:45:54 UTC] PHP Warning:  pg_query(): Query failed: ERROR:  syntax error at or near &quot;query&quot;
+LINE 1: query=select * from users
+        ^ in C:\PROJECTS\ReshalyBot\db.php on line 13
+[04-Jun-2020 19:49:15 UTC] PHP Warning:  pg_query(): Query failed: ERROR:  syntax error at or near &quot;gg&quot;
+LINE 1: gg
+        ^ in C:\PROJECTS\ReshalyBot\db.php on line 13
+[04-Jun-2020 19:49:50 UTC] PHP Warning:  pg_query(): Query failed: ERROR:  syntax error at or near &quot;gg&quot;
+LINE 1: gg
+        ^ in C:\PROJECTS\ReshalyBot\db.php on line 13
+[04-Jun-2020 19:50:24 UTC] PHP Warning:  pg_query(): Query failed: ERROR:  syntax error at or near &quot;gg&quot;
+LINE 1: gg
+        ^ in C:\PROJECTS\ReshalyBot\db.php on line 13
+[04-Jun-2020 20:51:28 UTC] PHP Warning:  pg_query(): Query failed:  in C:\PROJECTS\ReshalyBot\db.php on line 13
+[04-Jun-2020 20:56:11 UTC] PHP Warning:  pg_query(): Query failed:  in C:\PROJECTS\ReshalyBot\db.php on line 13
+[04-Jun-2020 20:59:20 UTC] PHP Warning:  pg_query(): Query failed: ERROR:  syntax error at or near &quot;from&quot;
+LINE 1: select 1* from users
+                  ^ in C:\PROJECTS\ReshalyBot\db.php on line 13
